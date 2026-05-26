@@ -203,30 +203,19 @@
 
       <!-- Пляшка для гри літрів. Тіло — currentColor, колір через CSS. -->
       <symbol id="bottle" viewBox="0 0 100 120">
-        <defs>
-          <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#5a5a72"/>
-            <stop offset="1" stop-color="#22232c"/>
-          </linearGradient>
-        </defs>
         <!-- Тінь під пляшкою -->
         <ellipse cx="50" cy="116" rx="32" ry="3" fill="#000" opacity="0.35"/>
-        <!-- Кришка -->
-        <rect x="36" y="2" width="28" height="14" rx="4" fill="url(#capGrad)"/>
-        <rect x="36" y="6" width="28" height="2" fill="#7a7a90" opacity="0.7"/>
-        <!-- Шийка -->
-        <rect x="42" y="14" width="16" height="14" fill="#aab" stroke="#556" stroke-width="0.5"/>
-        <!-- Плечі (з'єднання) -->
-        <path d="M 24 38 Q 50 24, 76 38 L 80 46 L 20 46 Z"
+        <!-- Горловина (того ж кольору, що й тіло) -->
+        <path d="M 24 24 Q 50 8, 76 24 L 80 36 L 20 36 Z"
               fill="currentColor" stroke="#15082a" stroke-width="2"/>
         <!-- Тіло -->
-        <rect x="20" y="46" width="60" height="64" rx="9" fill="currentColor" stroke="#15082a" stroke-width="2"/>
+        <rect x="20" y="34" width="60" height="76" rx="10" fill="currentColor" stroke="#15082a" stroke-width="2"/>
         <!-- Лінія "рівня рідини" -->
-        <path d="M 22 56 Q 50 60, 78 56" stroke="#fff" stroke-width="1.2" opacity="0.55" fill="none"/>
+        <path d="M 22 46 Q 50 50, 78 46" stroke="#fff" stroke-width="1.2" opacity="0.55" fill="none"/>
         <!-- Вертикальний блік -->
-        <rect x="28" y="50" width="6" height="48" rx="3" fill="#fff" opacity="0.32"/>
+        <rect x="28" y="40" width="6" height="56" rx="3" fill="#fff" opacity="0.32"/>
         <!-- Маленький блік знизу -->
-        <ellipse cx="62" cy="98" rx="6" ry="2" fill="#fff" opacity="0.2"/>
+        <ellipse cx="62" cy="100" rx="6" ry="2" fill="#fff" opacity="0.2"/>
       </symbol>
 
       <!-- Гирка (kettlebell) для гри ваг. Тіло використовує currentColor, тому колір

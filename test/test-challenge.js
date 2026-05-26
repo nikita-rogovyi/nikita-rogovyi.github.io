@@ -98,6 +98,45 @@ describe('challenge: plan progression', () => {
   });
 });
 
+describe('challenge: shuffled sequence (interleaved games)', () => {
+  it('shuffleInPlace preserves length and elements', () => {
+    const src = ['a','a','a','b','b','c'];
+    const copy = src.slice();
+    window._test.shuffleInPlace(copy);
+    expect(copy.length).toBe(src.length);
+    const count = (arr, v) => arr.filter(x => x === v).length;
+    expect(count(copy, 'a')).toBe(3);
+    expect(count(copy, 'b')).toBe(2);
+    expect(count(copy, 'c')).toBe(1);
+  });
+
+  it('expanded plan→sequence has one entry per round', () => {
+    const plan = [
+      { gameId: 'money', goal: 3, done: 0 },
+      { gameId: 'weights', goal: 2, done: 0 },
+    ];
+    const sequence = [];
+    for (const p of plan) for (let i = 0; i < p.goal; i++) sequence.push(p.gameId);
+    expect(sequence.length).toBe(5);
+    expect(sequence.filter(x => x === 'money').length).toBe(3);
+    expect(sequence.filter(x => x === 'weights').length).toBe(2);
+  });
+
+  it('after enough shuffles, ordering interleaves (statistical sanity check)', () => {
+    // Якщо ми зразу 100 разів пошафлимо [m,m,m,w,w], то хоч раз має бути не-послідовний порядок
+    let sawInterleaved = false;
+    for (let i = 0; i < 100; i++) {
+      const seq = ['m','m','m','w','w'];
+      window._test.shuffleInPlace(seq);
+      // "interleaved" = десь w зустрічається раніше за останнє m
+      const lastM = seq.lastIndexOf('m');
+      const firstW = seq.indexOf('w');
+      if (firstW < lastM) { sawInterleaved = true; break; }
+    }
+    expect(sawInterleaved).toBeTruthy();
+  });
+});
+
 describe('challenge: I18N keys present', () => {
   const keys = ['challengeTitle', 'challengeSub', 'challengeDiffLabel', 'challengeGoalsLabel',
     'challengeStart', 'challengeCancel', 'challengeDone',

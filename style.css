@@ -152,7 +152,7 @@ body.challenge-active .challenge-btn {
 body.challenge-active .next-round-wrap { display: none; }
 
 /* ===== Конфіг челенджу ===== */
-.challenge-card { max-width: 560px; }
+.challenge-card { max-width: 640px; }
 .challenge-goals { display: grid; gap: 8px; }
 .challenge-goal-row {
   display: grid;
@@ -213,7 +213,7 @@ body.challenge-active .next-round-wrap { display: none; }
 .challenge-goal-row.off { opacity: 0.5; }
 
 /* ===== Підсумок ===== */
-.summary-card { max-width: 600px; }
+.summary-card { max-width: 680px; }
 .summary-body {
   background: rgba(0,0,0,0.35);
   border-radius: 14px;
@@ -343,7 +343,7 @@ body.challenge-active .next-round-wrap { display: none; }
   border: 2px solid rgba(255, 106, 212, 0.4);
   padding: 6px 14px;
   border-radius: 18px;
-  margin: 10px auto 0;
+  margin: 18px auto 0;
   font-weight: bold;
   backdrop-filter: blur(6px);
 }
@@ -474,6 +474,9 @@ body.challenge-active .next-round-wrap { display: none; }
 
 .gender-grid.two-col   { grid-template-columns: repeat(2, 1fr); }
 .gender-grid.three-col { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+/* Дозволяємо клітинкам грид-у стискатися, інакше довгі слова розпирають картку */
+.gender-grid > * { min-width: 0; }
+.gender-btn { word-break: break-word; overflow-wrap: anywhere; }
 .game-card .gender-emoji { font-size: 2rem; }
 
 /* ===== Гра ваг — SVG-гирка (kettlebell) ===== */
@@ -935,7 +938,7 @@ input.answer { -moz-appearance: textfield; }
   border: 3px solid #ffd700;
   border-radius: 24px;
   padding: 24px 22px;
-  max-width: 520px;
+  max-width: 600px;
   width: 100%;
   max-height: calc(100vh - 32px);
   overflow-y: auto;
@@ -1126,9 +1129,53 @@ input.answer { -moz-appearance: textfield; }
   filter: grayscale(0.3);
 }
 
-@media (max-width: 480px) {
-  .gender-text { font-size: 0.78rem; }
-  .gender-emoji { font-size: 1.6rem; }
+/* ===== Welcome / Settings / Challenge модалки — адаптив по ширині ===== */
+@media (max-width: 560px) {
+  .welcome-overlay { padding: 10px; }
+  .welcome-card { padding: 18px 14px; border-radius: 18px; }
+  .welcome-title { font-size: 1.1rem; }
+  .welcome-sub { font-size: 0.88rem; }
+  .gender-grid { gap: 8px; }
+  .gender-btn { padding: 10px 4px; }
+  .gender-emoji { font-size: 1.7rem; }
+  .gender-text { font-size: 0.82rem; }
+  .welcome-input { padding: 10px 12px; font-size: 1rem; }
+  .welcome-actions .btn { padding: 0 18px; font-size: 1rem; height: 46px; min-height: 46px; }
+  .gender-grid.three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .challenge-goal-row { padding: 8px 10px; gap: 8px; }
+  .challenge-goal-row .row-goal { width: 64px; padding: 6px 8px; font-size: 1rem; }
+  .welcome-flags .flag svg { width: 42px; height: 30px; }
+}
+
+@media (max-width: 420px) {
+  .welcome-overlay { padding: 6px; }
+  .welcome-card { padding: 14px 10px; border-radius: 14px; }
+  .welcome-title { font-size: 1rem; margin-bottom: 4px; }
+  .welcome-sub { font-size: 0.82rem; margin-bottom: 8px; }
+  .welcome-section { margin-bottom: 10px; }
+  .welcome-label { font-size: 0.88rem; margin-bottom: 4px; }
+  .gender-grid { gap: 6px; }
+  .gender-btn { padding: 8px 2px; border-width: 2px; border-radius: 11px; gap: 4px; }
+  .gender-emoji { font-size: 1.4rem; }
+  .gender-text { font-size: 0.74rem; }
+  .diff-stars { font-size: 0.78rem; }
+  .welcome-input { padding: 8px 10px; font-size: 0.95rem; }
+  .welcome-actions { gap: 6px; margin-top: 14px; }
+  .welcome-actions .btn { padding: 0 12px; font-size: 0.92rem; height: 42px; min-height: 42px; }
+  .welcome-flags { gap: 8px; }
+  .welcome-flags .flag svg { width: 36px; height: 26px; }
+  .challenge-goal-row { padding: 7px 8px; gap: 6px; }
+  .challenge-goal-row .row-label { gap: 4px; font-size: 0.9rem; }
+  .challenge-goal-row .row-label .game-icon { font-size: 1.1rem; }
+  .challenge-goal-row .row-goal { width: 56px; padding: 5px 6px; font-size: 0.95rem; }
+  .challenge-goal-row .row-toggle { width: 20px; height: 20px; border-width: 2px; }
+}
+
+@media (max-width: 340px) {
+  .gender-emoji { font-size: 1.2rem; }
+  .gender-text { font-size: 0.68rem; }
+  .welcome-title { font-size: 0.92rem; }
+  .gender-grid.three-col { gap: 4px; }
 }
 
 .next-round-wrap {

@@ -86,6 +86,9 @@ const I18N = {
     challengeBegin: (gameName) => `🚀 Старт челенджу! Спочатку: ${gameName}`,
     challengeNext: (gameName) => `➡️ Переходимо до: ${gameName}`,
     challengeDone: 'Челендж завершено!',
+    challengeAbortConfirm: 'Перервати челендж? Прогрес буде показано і збережено в підсумку.',
+    challengeAbortTitle: 'Перервати челендж',
+    challengeAborted: 'Челендж перервано',
     summaryTotal: '🎯 Загалом:',
     summaryFirstTry: 'з першої спроби',
     taskTypeNames: {
@@ -284,6 +287,9 @@ const I18N = {
     challengeBegin: (gameName) => `🚀 Старт челленджа! Сначала: ${gameName}`,
     challengeNext: (gameName) => `➡️ Переходим к: ${gameName}`,
     challengeDone: 'Челлендж завершён!',
+    challengeAbortConfirm: 'Прервать челлендж? Прогресс будет показан и сохранён в итогах.',
+    challengeAbortTitle: 'Прервать челлендж',
+    challengeAborted: 'Челлендж прерван',
     summaryTotal: '🎯 Итого:',
     summaryFirstTry: 'с первой попытки',
     taskTypeNames: {
@@ -480,6 +486,9 @@ const I18N = {
     challengeBegin: (gameName) => `🚀 ¡Comienza el desafío! Primero: ${gameName}`,
     challengeNext: (gameName) => `➡️ Pasamos a: ${gameName}`,
     challengeDone: '¡Desafío completado!',
+    challengeAbortConfirm: '¿Interrumpir el desafío? El progreso se mostrará y guardará en el resumen.',
+    challengeAbortTitle: 'Interrumpir desafío',
+    challengeAborted: 'Desafío interrumpido',
     summaryTotal: '🎯 Total:',
     summaryFirstTry: 'al primer intento',
     taskTypeNames: {
@@ -672,8 +681,10 @@ const state = {
   challenge: {
     active: false,
     difficulty: 'medium',
-    plan: [],         // [{ gameId, goal, done }]
-    current: 0,       // індекс у plan
+    plan: [],         // [{ gameId, goal, done }] — агрегати по іграх (для підсумку)
+    current: 0,       // індекс у plan поточної гри (для зворотньої сумісності)
+    sequence: [],     // ['money','weights',...] — перемішаний список раундів
+    seqIndex: 0,      // позиція у sequence
     attempts: 0,      // к-сть спроб поточного раунду (для firstTry метрики)
     stats: {},        // { taskType: { firstTry, total } }
   },
@@ -1147,6 +1158,7 @@ function applyStaticLabels() {
   if (nb) nb.textContent = t.nextRound;
   updatePlayerChip();
   renderGoalsBar();
+  if (typeof updateChallengeBtn === 'function') updateChallengeBtn();
 }
 
 function renderGoalsBar() {
@@ -1510,14 +1522,12 @@ function win(extraText) {
     const st = state.challenge.stats[taskType] || (state.challenge.stats[taskType] = { firstTry: 0, total: 0 });
     st.total++;
     if (firstTry) st.firstTry++;
-    const cur = state.challenge.plan[state.challenge.current];
-    if (cur) cur.done++;
-
-    if (cur && cur.done >= cur.goal) {
-      // Гра завершена — переходимо до наступної
-      setTimeout(() => advanceChallenge(), 3900);
-      return;
-    }
+    // Інкремент агрегату по грі (для підсумку)
+    const planEntry = state.challenge.plan.find(p => p.gameId === state.gameMode);
+    if (planEntry) planEntry.done++;
+    // Усі переходи між раундами челенджу йдуть через advanceChallenge
+    setTimeout(() => advanceChallenge(), 3900);
+    return;
   }
 
   setTimeout(() => {
@@ -1919,14 +1929,25 @@ function startChallenge() {
     }
   }
   if (plan.length === 0) return;
+  // Розгортаємо plan у плаский список раундів.
+  // Easy: ігри йдуть підряд (без перемішування) і показуємо «наступна гра».
+  // Medium: перемішуємо і показуємо «наступна гра» при зміні.
+  // Hard: перемішуємо, але переходи мовчазні (тип наступної задачі не оголошуємо).
+  const sequence = [];
+  for (const p of plan) {
+    for (let i = 0; i < p.goal; i++) sequence.push(p.gameId);
+  }
+  if (challengeDraft.difficulty !== 'easy') shuffleInPlace(sequence);
   state.challenge.active = true;
   state.challenge.difficulty = challengeDraft.difficulty;
   state.challenge.plan = plan;
-  state.challenge.current = 0;
+  state.challenge.sequence = sequence;
+  state.challenge.seqIndex = 0;
+  state.challenge.current = plan.findIndex(p => p.gameId === sequence[0]);
   state.challenge.attempts = 0;
   state.challenge.stats = {};
   state.difficulty = challengeDraft.difficulty;
-  state.gameMode = plan[0].gameId;
+  state.gameMode = sequence[0];
   try {
     localStorage.setItem('difficulty', state.difficulty);
     localStorage.setItem('gameMode', state.gameMode);
@@ -1934,33 +1955,58 @@ function startChallenge() {
   document.body.classList.add('challenge-active');
   closeChallenge();
   applyStaticLabels();
+  updateChallengeBtn();
 
-  // Анімація-привітання та запуск
-  const game = window.Games[state.gameMode];
-  showChallengeTransition(T().challengeBegin(game.getName(state.lang)));
-  setTimeout(() => {
+  // Анімація-привітання та запуск.
+  // На складному рівні не оголошуємо першу гру, аби не натякати на тип задач.
+  if (state.challenge.difficulty === 'hard') {
     state.round = 1;
     newRound();
-  }, 1700);
+  } else {
+    const game = window.Games[state.gameMode];
+    showChallengeTransition(T().challengeBegin(game.getName(state.lang)));
+    setTimeout(() => {
+      state.round = 1;
+      newRound();
+    }, 1700);
+  }
+}
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function advanceChallenge() {
-  state.challenge.current++;
-  if (state.challenge.current >= state.challenge.plan.length) {
+  const ch = state.challenge;
+  ch.seqIndex++;
+  if (ch.seqIndex >= ch.sequence.length) {
     finishChallenge();
     return;
   }
-  const cur = state.challenge.plan[state.challenge.current];
-  state.gameMode = cur.gameId;
+  const nextGameId = ch.sequence[ch.seqIndex];
+  const gameChanged = nextGameId !== state.gameMode;
+  state.gameMode = nextGameId;
+  ch.current = ch.plan.findIndex(p => p.gameId === nextGameId);
   try { localStorage.setItem('gameMode', state.gameMode); } catch (e) {}
   applyStaticLabels();
-  const game = window.Games[state.gameMode];
-  showChallengeTransition(T().challengeNext(game.getName(state.lang)));
-  setTimeout(() => {
+
+  const startNext = () => {
     state.round++;
-    state.challenge.attempts = 0;
+    ch.attempts = 0;
     newRound();
-  }, 1700);
+  };
+  const announce = gameChanged && state.challenge.difficulty !== 'hard';
+  if (announce) {
+    const game = window.Games[state.gameMode];
+    showChallengeTransition(T().challengeNext(game.getName(state.lang)));
+    setTimeout(startNext, 1700);
+  } else {
+    startNext();
+  }
 }
 
 function showChallengeTransition(text) {
@@ -1976,6 +2022,34 @@ function finishChallenge() {
   document.body.classList.remove('challenge-active');
   renderChallengeSummary();
   $('#summaryOverlay').hidden = false;
+  updateChallengeBtn();
+}
+
+function abortChallenge() {
+  if (!state.challenge.active) return;
+  const t = T();
+  if (!window.confirm(t.challengeAbortConfirm)) return;
+  state.challenge.active = false;
+  document.body.classList.remove('challenge-active');
+  renderChallengeSummary();
+  // Mark the summary title as aborted (renderChallengeSummary set it to challengeDone).
+  $('#summaryTitleText').textContent = t.challengeAborted;
+  $('#summaryOverlay').hidden = false;
+  updateChallengeBtn();
+}
+
+function updateChallengeBtn() {
+  const btn = $('#challengeBtn');
+  if (!btn) return;
+  if (state.challenge.active) {
+    btn.textContent = '🛑';
+    btn.title = T().challengeAbortTitle;
+    btn.setAttribute('aria-label', T().challengeAbortTitle);
+  } else {
+    btn.textContent = '🏆';
+    btn.title = 'Challenge';
+    btn.setAttribute('aria-label', 'Challenge');
+  }
 }
 
 function renderChallengeSummary() {
@@ -2056,7 +2130,10 @@ function init() {
   if (sb) sb.addEventListener('click', () => openWelcome('settings'));
 
   const cb = $('#challengeBtn');
-  if (cb) cb.addEventListener('click', openChallenge);
+  if (cb) cb.addEventListener('click', () => {
+    if (state.challenge.active) abortChallenge();
+    else openChallenge();
+  });
   const cStart = $('#challengeStart');
   if (cStart) cStart.addEventListener('click', startChallenge);
   const cCancel = $('#challengeCancel');
@@ -2100,6 +2177,6 @@ window._test = {
   formatEuro, makeMoneyMix, buildSubset, generateOptions,
   fillPlaceholders, pickHeroPhrase, pickLosePhrase,
   pickTaskType, allGoalsMet, getProgress, incProgress, getGoal, setGoal,
-  loadProfile, saveProfile,
+  loadProfile, saveProfile, shuffleInPlace,
   COINS, NOTES, ITEMS: undefined, // ITEMS живуть у I18N
 };
