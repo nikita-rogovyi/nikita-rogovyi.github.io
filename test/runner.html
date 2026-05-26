@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧪 KPop Money/Weights Trainer — Tests</title>
+  <style>
+    body {
+      font-family: 'Trebuchet MS', system-ui, sans-serif;
+      background: linear-gradient(180deg, #2a0848 0%, #0a0418 100%);
+      color: #fff;
+      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      background: linear-gradient(90deg, #ffd700, #ff6ad4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    #summary {
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin: 14px 0;
+      font-size: 1.2rem;
+    }
+    #summary.ok   { background: rgba(40, 200, 80, 0.25); border: 2px solid #6aff8c; }
+    #summary.fail { background: rgba(220, 40, 60, 0.25); border: 2px solid #ff6a8c; }
+    .summary .bad { color: #ff6a8c; margin-left: 8px; }
+    section.suite {
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(255, 215, 0, 0.25);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+    }
+    section.suite h2 {
+      margin: 0 0 10px 0;
+      color: #ffd700;
+      font-size: 1.05rem;
+    }
+    .test {
+      padding: 5px 0;
+      font-size: 0.92rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.07);
+    }
+    .test:last-child { border-bottom: none; }
+    .test.pass { color: #88ffa8; }
+    .test.fail { color: #ff8aa8; }
+    .test .mark { display: inline-block; min-width: 18px; font-weight: bold; }
+    .err {
+      background: rgba(255, 32, 80, 0.18);
+      color: #ffd0d8;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      margin: 4px 0 0 22px;
+      white-space: pre-wrap;
+    }
+    button {
+      background: linear-gradient(135deg, #d428a8, #9a4ad4);
+      color: #fff;
+      border: 2px solid #ffd700;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <h1>🧪 Тести KPop Money Trainer</h1>
+  <p>
+    <button id="rerun">▶ Прогнати тести знову</button>
+    <a href="../index.html" style="color:#ffd700; margin-left: 14px;">← повернутися до гри</a>
+  </p>
+  <div id="results"></div>
+
+  <script>
+    // Активуємо тестовий режим — щоб script.js не запускав init() автоматично
+    window.__TEST_MODE__ = true;
+  </script>
+
+  <!-- SVG-спрайти не потрібні для тестів, але потрібні DOM-стаби для скриптів -->
+  <div id="taskText" style="display:none"></div>
+  <div id="taskArea" style="display:none"></div>
+  <div id="controls" style="display:none"></div>
+  <div id="feedback" style="display:none"></div>
+  <div id="score"></div><div id="streak"></div><div id="round"></div>
+  <div id="appTitle"></div><div id="lblScore"></div><div id="lblStreak"></div><div id="lblRound"></div>
+  <div id="welcomeOverlay" hidden></div>
+  <div id="challengeOverlay" hidden></div>
+  <div id="summaryOverlay" hidden></div>
+  <div id="goalsBar" hidden></div>
+  <div id="playerChip" hidden></div>
+  <div id="animStage"></div><div id="animOverlay"></div>
+
+  <!-- Завантажуємо реальні скрипти застосунку -->
+  <script src="../script.js"></script>
+  <script src="../weights-game.js"></script>
+  <script src="../volumes-game.js"></script>
+  <script src="../multiplication-game.js"></script>
+  <script src="../division-game.js"></script>
+
+  <!-- Тестовий фреймворк -->
+  <script src="framework.js"></script>
+
+  <!-- Самі тести -->
+  <script src="test-common.js"></script>
+  <script src="test-weights.js"></script>
+  <script src="test-volumes.js"></script>
+  <script src="test-challenge.js"></script>
+  <script src="test-arithmetic.js"></script>
+
+  <script>
+    function runTests() {
+      TestRunner.run(document.getElementById('results'));
+    }
+    document.getElementById('rerun').addEventListener('click', runTests);
+    runTests();
+  </script>
+</body>
+</html>
