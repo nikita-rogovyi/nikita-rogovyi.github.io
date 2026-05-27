@@ -96,6 +96,58 @@ describe('weights: makeWeightMix', () => {
   });
 });
 
+describe('weights: makeCountMix (worksheet-style)', () => {
+  const allowedQ = new Set([1, 2, 4, 8, 12, 16]); // ¼,½,1,2,3,4 кг
+  for (const diff of ['easy', 'medium', 'hard']) {
+    const d = () => W().WDIFF[diff];
+    it(`${diff}: sum of pieces equals total, never ¾`, () => {
+      for (let i = 0; i < 60; i++) {
+        const mix = W().makeCountMix(d());
+        const sum = mix.items.reduce((a, p) => a + p.q, 0);
+        expect(sum).toBe(mix.total);
+        if (!W().isAllowedQ(mix.total)) throw new Error(`Total ${mix.total} has ¾`);
+      }
+    });
+    it(`${diff}: only uses pieces ≤ 4 kg`, () => {
+      for (let i = 0; i < 60; i++) {
+        const mix = W().makeCountMix(d());
+        mix.items.forEach(p => {
+          if (!allowedQ.has(p.q)) throw new Error(`Unexpected piece q=${p.q}`);
+          if (p.q > 16) throw new Error(`Piece exceeds 4 kg: q=${p.q}`);
+        });
+      }
+    });
+    it(`${diff}: total within configured range`, () => {
+      for (let i = 0; i < 60; i++) {
+        const mix = W().makeCountMix(d());
+        expect(mix.total).toBeGreaterThanOrEqual(d().totalMin);
+        expect(mix.total).toBeLessThanOrEqual(d().totalMax);
+      }
+    });
+  }
+  it('medium forces fraction combination (≥4 quarters worth of ½/¼)', () => {
+    // На середньому дроби мають складатися хоча б в 1 кг (4 чверті)
+    let combinedCount = 0;
+    for (let i = 0; i < 40; i++) {
+      const mix = W().makeCountMix(W().WDIFF.medium);
+      const fracQ = mix.items.filter(p => p.q === 1 || p.q === 2).reduce((a, p) => a + p.q, 0);
+      if (fracQ >= 4) combinedCount++;
+    }
+    // Майже всі мають вимагати комбінування (мінімум переважна більшість)
+    expect(combinedCount).toBeGreaterThanOrEqual(36);
+  });
+  it('splitBlocks sums to whole kg using pieces ≤ maxKg', () => {
+    for (let kg = 1; kg <= 10; kg++) {
+      const blocks = W().splitBlocks(kg, 4);
+      expect(blocks.reduce((a, b) => a + b, 0)).toBe(kg);
+      blocks.forEach(b => {
+        expect(b).toBeGreaterThanOrEqual(1);
+        expect(b).toBeLessThanOrEqual(4);
+      });
+    }
+  });
+});
+
 describe('weights: generateOptions', () => {
   it('returns 4 unique allowed values including correct', () => {
     for (const target of [4, 8, 12, 16]) {

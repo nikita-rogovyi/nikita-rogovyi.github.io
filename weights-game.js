@@ -4,28 +4,61 @@
 // win(), lose(), state, fillPlaceholders, playClickSound, playRemoveSound.
 
 (function () {
-  // Одиниця виміру = чверть кг. 1=¼kg, 2=½kg, 4=1kg.
+  // Одиниця виміру = чверть кг. 1=¼kg, 2=½kg, 4=1kg, 8=2kg, 12=3kg, 16=4kg.
+  // Цілі гирі — як на шкільному аркуші: коробки «1 Kg», «2 Kg», «3 Kg», «4 Kg»
+  // (більше 4 кг не буває), плюс дробові ½ та ¼.
   const PIECES = [
-    { q: 1, size: '14', frac: '¼' },
-    { q: 2, size: '12', frac: '½' },
-    { q: 4, size: '1',  frac: '1' },
+    { q: 1,  size: '14', frac: '¼' },
+    { q: 2,  size: '12', frac: '½' },
+    { q: 4,  size: '1',  frac: '1' },
+    { q: 8,  size: '2',  frac: '2' },
+    { q: 12, size: '3',  frac: '3' },
+    { q: 16, size: '4',  frac: '4' },
   ];
+  const QUARTER = PIECES[0];
+  const HALF = PIECES[1];
+  const blockPiece = (kg) => PIECES.find(p => p.q === kg * 4);
 
-  // Складність: max кількість предметів одного типу + загальний max у "чвертях"
-  // bias = 'large-first' — спочатку 1кг, потім ½, потім ¼ (легко рахувати)
-  // bias = 'small-first' — спочатку ¼ (форсує усвідомлення: 4×¼ = 1кг)
+  // Складність задає, з чого складати набір гир (як на аркуші «Escribe cuántos Kg hay»):
+  //   blockMin/Max  — скільки цілих гир (1-4 кг) у наборі
+  //   blockKgMax    — найбільша ціла гиря (≤ 4 кг)
+  //   halfMax/quarterMax — скільки ½ та ¼ можна додати
+  //   minFracQ      — мінімум «чвертей» з дробів (≥4 = форсує комбінацію 4×¼ або 2×½ = 1 кг)
+  //   maxFracQ      — максимум «чвертей» з дробів
+  //   minPieces/maxPieces — діапазон загальної к-сті предметів у наборі
+  //   totalMin/totalMax   — діапазон підсумку (у «чвертях», без ¾)
+  // bias/enableInput/spread зберігаються (bias — для makeWeightMix у задачі «збери X»).
   const WDIFF = {
-    easy:   { maxDup: 2, totalMin: 2, totalMax: 6,  enableInput: false,
-              bias: 'large-first',
-              spread: [1, 2, -1, -2, 3, -3, 4, -4] },
-    medium: { maxDup: 3, totalMin: 3, totalMax: 12, enableInput: true,
-              bias: 'large-first',
-              spread: [1, -1, 2, -2, 3, -3] },
-    // На складному змусимо часто використовувати ¼-гирі та ½-гирі,
-    // мінімізуючи "просто 1кг" варіанти.
-    hard:   { maxDup: 5, totalMin: 6, totalMax: 24, enableInput: true,
-              bias: 'small-first',
-              spread: [1, -1, 2, -2] },
+    // Легко: маленькі суми, мало предметів, дроби можна й не комбінувати.
+    easy: {
+      bias: 'large-first', enableInput: false,
+      spread: [1, -1, 2, -2, 4, -4],
+      totalMin: 4, totalMax: 14,
+      blockMin: 0, blockMax: 1, blockKgMax: 3,
+      halfMax: 2, quarterMax: 2,
+      minFracQ: 0, maxFracQ: 4,
+      minPieces: 2, maxPieces: 5,
+    },
+    // Середньо: як на аркуші — ціла гиря(і) + дроби, що складаються у кіло.
+    medium: {
+      bias: 'large-first', enableInput: true,
+      spread: [1, -1, 2, -2, 4, -4],
+      totalMin: 6, totalMax: 22,
+      blockMin: 0, blockMax: 2, blockKgMax: 4,
+      halfMax: 3, quarterMax: 4,
+      minFracQ: 4, maxFracQ: 8,
+      minPieces: 3, maxPieces: 7,
+    },
+    // Складно: більші суми, більше дробів для комбінування.
+    hard: {
+      bias: 'small-first', enableInput: true,
+      spread: [1, -1, 2, -2, 4, -4, 8, -8],
+      totalMin: 16, totalMax: 40,
+      blockMin: 1, blockMax: 3, blockKgMax: 4,
+      halfMax: 4, quarterMax: 6,
+      minFracQ: 6, maxFracQ: 12,
+      minPieces: 4, maxPieces: 9,
+    },
   };
 
   // ===== I18N: додаємо ключі до існуючого I18N (визначеного у script.js) =====
@@ -174,6 +207,74 @@
     return items;
   }
 
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Розбиває ціле число кг на гирі 1..maxKg, віддаючи перевагу більшим
+  // (як на аркуші: радше «4 + 3», ніж купа однокілограмових).
+  function splitBlocks(wholeKg, maxKg) {
+    const out = [];
+    let remaining = wholeKg;
+    while (remaining > 0) {
+      const hi = Math.min(maxKg, remaining);
+      const lo = Math.max(1, Math.ceil(hi / 2));
+      const v = Math.random() < 0.6 ? hi : rand(lo, hi);
+      out.push(v);
+      remaining -= v;
+    }
+    return out;
+  }
+
+  // ===== Набір гир у стилі шкільного аркуша «Escribe cuántos Kg hay» =====
+  // Повертає { items, total } — підсумок виводиться з самого набору (ціле + дроби).
+  function makeCountMix(d) {
+    for (let attempt = 0; attempt < 60; attempt++) {
+      const total = randAllowedQ(d.totalMin, d.totalMax); // % 4 ∈ {0,1,2}
+      const rem = total % 4;
+
+      // Скільки «чвертей» дамо дробами: F ≡ rem (mod 4), rem ≤ F ≤ min(maxFracQ, total)
+      const fOpts = [];
+      for (let F = rem; F <= Math.min(d.maxFracQ, total); F += 4) fOpts.push(F);
+      let pool = fOpts.filter(F => F >= d.minFracQ);
+      if (pool.length === 0) pool = fOpts;
+      if (pool.length === 0) continue;
+      const F = choice(pool);
+
+      // Розкладаємо F на ½ (по 2) та ¼ (по 1): 2h + c = F
+      const hOpts = [];
+      for (let h = 0; h <= Math.min(d.halfMax, Math.floor(F / 2)); h++) {
+        const c = F - 2 * h;
+        if (c >= 0 && c <= d.quarterMax) hOpts.push(h);
+      }
+      if (hOpts.length === 0) continue;
+      const halves = choice(hOpts);
+      const quarters = F - 2 * halves;
+
+      // Ціла частина — цілі гирі 1..blockKgMax
+      const wholeKg = (total - F) / 4;
+      if (wholeKg < 0) continue;
+      if (wholeKg === 0 && d.blockMin > 0) continue;
+      const blocks = wholeKg > 0 ? splitBlocks(wholeKg, d.blockKgMax) : [];
+      if (wholeKg > 0 && (blocks.length < d.blockMin || blocks.length > d.blockMax)) continue;
+
+      const items = [];
+      blocks.forEach(kg => items.push(blockPiece(kg)));
+      for (let i = 0; i < halves; i++) items.push(HALF);
+      for (let i = 0; i < quarters; i++) items.push(QUARTER);
+      if (items.length < d.minPieces || items.length > d.maxPieces) continue;
+
+      shuffle(items);
+      return { items, total };
+    }
+    // Запасний простий варіант (2×½ = 1 кг)
+    return { items: [HALF, HALF], total: 4 };
+  }
+
   // Допустиме значення (не дає ¾): q%4 ∈ {0,1,2}
   function isAllowedQ(q) { return q >= 0 && q % 4 !== 3; }
   function randAllowedQ(min, max) {
@@ -188,13 +289,14 @@
   function renderCountTask(withOptions) {
     const t = T();
     const d = WDIFF[state.difficulty] || WDIFF.medium;
-    // Унікальний таргет (без повторів останніх 5)
-    let target;
+    // Набір гир у стилі аркуша; підсумок (target) випливає з самого набору
+    let mix;
     for (let i = 0; i < 30; i++) {
-      target = randAllowedQ(d.totalMin, d.totalMax);
-      if (window.taskMemory.accept('weights-count-' + (withOptions ? 'O' : 'I'), target, 5)) break;
+      mix = makeCountMix(d);
+      if (window.taskMemory.accept('weights-count-' + (withOptions ? 'O' : 'I'), mix.total, 5)) break;
     }
-    const items = makeWeightMix(target, d.maxDup, d.bias);
+    const target = mix.total;
+    const items = mix.items;
     state.currentTask = { type: 'weightCount', target };
 
     let scenario;
@@ -413,6 +515,6 @@
     getName: (lang) => (window.I18N && window.I18N[lang] && window.I18N[lang].gameWeights) || 'Weights',
     newRound,
     // Експорт для тестів
-    _test: { PIECES, WDIFF, isAllowedQ, randAllowedQ, makeWeightMix, formatWeight, quartersToParts, generateOptions },
+    _test: { PIECES, WDIFF, isAllowedQ, randAllowedQ, makeWeightMix, makeCountMix, splitBlocks, formatWeight, quartersToParts, generateOptions },
   };
 })();

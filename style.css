@@ -514,9 +514,15 @@ body.challenge-active .next-round-wrap { display: none; }
 }
 .weight-item.size-14 { width: 58px;  height: 70px;  --w-bg: #28a8d4; }
 .weight-item.size-12 { width: 86px;  height: 104px; --w-bg: #d428a8; }
-.weight-item.size-1  { width: 118px; height: 142px; --w-bg: #d49a28; }
+.weight-item.size-1  { width: 110px; height: 132px; --w-bg: #d49a28; }
+.weight-item.size-2  { width: 124px; height: 148px; --w-bg: #9a4ad4; }
+.weight-item.size-3  { width: 136px; height: 162px; --w-bg: #d44878; }
+.weight-item.size-4  { width: 148px; height: 176px; --w-bg: #2aa86a; }
 .weight-item.size-14 .w-label { font-size: 0.72rem; padding: 2px 6px; border-width: 1.5px; }
-.weight-item.size-1  .w-label { font-size: 1.1rem; padding: 4px 14px; }
+.weight-item.size-1  .w-label { font-size: 1.05rem; padding: 4px 13px; }
+.weight-item.size-2 .w-label,
+.weight-item.size-3 .w-label,
+.weight-item.size-4 .w-label { font-size: 1.15rem; padding: 4px 15px; }
 .weight-item:hover { transform: translateY(-4px); filter: drop-shadow(0 0 12px var(--w-bg)); }
 .weight-item.selected {
   animation: pulse 1s infinite;
@@ -998,7 +1004,10 @@ input.answer { -moz-appearance: textfield; }
   .goals-bar { margin: 6px auto 0; }
   .weight-item.size-14 { width: 50px;  height: 60px;  }
   .weight-item.size-12 { width: 72px;  height: 86px;  }
-  .weight-item.size-1  { width: 96px;  height: 116px; }
+  .weight-item.size-1  { width: 92px;  height: 110px; }
+  .weight-item.size-2  { width: 104px; height: 124px; }
+  .weight-item.size-3  { width: 114px; height: 136px; }
+  .weight-item.size-4  { width: 124px; height: 148px; }
   .volume-item.size-14 { width: 50px;  height: 60px;  }
   .volume-item.size-12 { width: 72px;  height: 86px;  }
   .volume-item.size-1  { width: 96px;  height: 116px; }
@@ -1032,12 +1041,18 @@ input.answer { -moz-appearance: textfield; }
   .settings-btn { width: 38px; height: 38px; font-size: 1.1rem; }
   .weight-item.size-14 { width: 42px; height: 50px; }
   .weight-item.size-12 { width: 60px; height: 72px; }
-  .weight-item.size-1  { width: 80px; height: 96px; }
+  .weight-item.size-1  { width: 78px; height: 94px; }
+  .weight-item.size-2  { width: 88px; height: 106px; }
+  .weight-item.size-3  { width: 96px; height: 116px; }
+  .weight-item.size-4  { width: 104px; height: 124px; }
   .volume-item.size-14 { width: 42px; height: 50px; }
   .volume-item.size-12 { width: 60px; height: 72px; }
   .volume-item.size-1  { width: 80px; height: 96px; }
   .weight-item .w-label { font-size: 0.65rem; padding: 1px 4px; border-width: 1px; }
-  .weight-item.size-1 .w-label { font-size: 0.78rem; padding: 2px 8px; }
+  .weight-item.size-1 .w-label,
+  .weight-item.size-2 .w-label,
+  .weight-item.size-3 .w-label,
+  .weight-item.size-4 .w-label { font-size: 0.78rem; padding: 2px 8px; }
   .volume-item .w-label { font-size: 0.65rem; padding: 1px 4px; border-width: 1px; }
   .volume-item.size-1 .w-label { font-size: 0.78rem; padding: 2px 8px; }
 }
