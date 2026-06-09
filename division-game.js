@@ -15,6 +15,10 @@
       divWordHint: '📖 Прочитай і розвʼяжи:',
       divWordPureHint: '🤔 Розберись сам — який тут приклад?',
       divMissingHint: '🔎 Знайди пропущене число:',
+      divLongHint: '✏️ Поділи з остачею:',
+      divQuotient: 'Частка',
+      divRemainder: 'Остача',
+      divCorrectLong: (q, r) => `Правильно: частка ${q}, остача ${r}`,
       divScenarios: [
         '🧋 Зої купила {a} чашок бабл-ті та хоче розділити порівну між {b} подругами. Скільки чашок кожній?',
         '💿 У HUNTR/X {a} альбомів, які треба розкласти по {b} коробкам порівну. Скільки в кожній?',
@@ -34,6 +38,10 @@
       divWordHint: '📖 Прочитай и реши:',
       divWordPureHint: '🤔 Разберись сам — какой здесь пример?',
       divMissingHint: '🔎 Найди пропущенное число:',
+      divLongHint: '✏️ Раздели с остатком:',
+      divQuotient: 'Частное',
+      divRemainder: 'Остаток',
+      divCorrectLong: (q, r) => `Правильно: частное ${q}, остаток ${r}`,
       divScenarios: [
         '🧋 Зои купила {a} чашек бабл-ти и хочет разделить поровну между {b} подругами. Сколько чашек каждой?',
         '💿 У HUNTR/X {a} альбомов, надо разложить по {b} коробкам поровну. Сколько в каждой?',
@@ -53,6 +61,10 @@
       divWordHint: '📖 Lee y resuelve:',
       divWordPureHint: '🤔 Adivina solo — ¿cuál es la operación aquí?',
       divMissingHint: '🔎 Encuentra el número que falta:',
+      divLongHint: '✏️ Divide con resto:',
+      divQuotient: 'Cociente',
+      divRemainder: 'Resto',
+      divCorrectLong: (q, r) => `Correcto: cociente ${q}, resto ${r}`,
       divScenarios: [
         '🧋 Zoey compró {a} tazas de bubble tea y quiere repartirlas entre {b} amigas. ¿Cuántas a cada una?',
         '💿 HUNTR/X tienen {a} álbumes que hay que colocar en {b} cajas iguales. ¿Cuántos en cada una?',
@@ -87,6 +99,9 @@
   ensureTaskTypeName('es', 'divWord',      '📖 División (historia + operación)');
   ensureTaskTypeName('es', 'divWordPure',  '🤔 División (sólo historia)');
   ensureTaskTypeName('es', 'divMissing',   '🔎 División (encuentra el número)');
+  ensureTaskTypeName('uk', 'divLong',      '🧮 Ділення з остачею (3-знач. ÷ 1-знач.)');
+  ensureTaskTypeName('ru', 'divLong',      '🧮 Деление с остатком (3-знач. ÷ 1-знач.)');
+  ensureTaskTypeName('es', 'divLong',      '🧮 División con resto (3 cifras ÷ 1 cifra)');
 
   function pickEquation() {
     let b, c, key;
@@ -98,6 +113,32 @@
     }
     const a = b * c;
     return { a, b, ans: c };
+  }
+
+  // Ділення тризначного числа на однозначне (з можливою остачею).
+  // ~30% — точне ділення (r=0), решта — з остачею.
+  function pickEquationLong() {
+    let a, b;
+    const wantExact = Math.random() < 0.3;
+    for (let i = 0; i < 30; i++) {
+      b = rand(2, 9);
+      if (wantExact) {
+        // a = b * c, де результат — тризначне число.
+        const cMin = Math.ceil(100 / b);
+        const cMax = Math.floor(999 / b);
+        const c = rand(cMin, cMax);
+        a = b * c;
+      } else {
+        a = rand(100, 999);
+        // Уникаємо випадкового точного ділення, коли хотіли остачу
+        if (a % b === 0) a += rand(1, b - 1);
+      }
+      const key = a + '/' + b;
+      if (window.taskMemory.accept('div-long', key, 10)) break;
+    }
+    const q = Math.floor(a / b);
+    const r = a % b;
+    return { a, b, q, r };
   }
 
   // Сусіди по таблиці ділення — c±1, ±2 та результати сусідніх a÷(b±1)
@@ -173,6 +214,12 @@
   function newRound() {
     const t = T();
     const d = DDIFF[state.difficulty] || DDIFF.medium;
+
+    // На складному рівні приблизно половина раундів — ділення тризначних з остачею.
+    if (state.difficulty === 'hard' && Math.random() < 0.5) {
+      return renderLongDivisionTask();
+    }
+
     const { a, b, ans } = pickEquation();
     const hasScen = t.divScenarios && t.divScenarios.length > 0;
     const type = pickTaskType(hasScen);
@@ -210,6 +257,47 @@
       // Опції в розумному діапазоні
       renderAnswerControlsMissing(target, d, hideA ? 'a' : 'b');
     }
+  }
+
+  function renderLongDivisionTask() {
+    const t = T();
+    const { a, b, q, r } = pickEquationLong();
+    state.currentTask = { type: 'divLong', target: q, remainder: r };
+    $('#taskText').innerHTML = `<b>${t.divLongHint}</b>`;
+    $('#taskArea').innerHTML = `<div class="big-equation">
+      <span class="eq-op">${a}</span>
+      <span class="eq-sign">÷</span>
+      <span class="eq-op">${b}</span>
+      <span class="eq-sign">=</span>
+      <span class="eq-op qmark">?</span>
+    </div>`;
+    $('#controls').innerHTML = `
+      <div class="long-div-fields">
+        <label class="long-div-field">
+          <span class="long-div-label">${t.divQuotient}</span>
+          <input class="answer" id="divLongQ" type="number" min="0" max="999"
+                 inputmode="numeric" placeholder="?" autocomplete="off"/>
+        </label>
+        <label class="long-div-field">
+          <span class="long-div-label">${t.divRemainder}</span>
+          <input class="answer" id="divLongR" type="number" min="0" max="9"
+                 inputmode="numeric" placeholder="?" autocomplete="off"/>
+        </label>
+      </div>
+      <button class="btn" id="checkDivLongBtn">${t.check}</button>
+    `;
+    const qInp = $('#divLongQ');
+    const rInp = $('#divLongR');
+    qInp.focus();
+    qInp.addEventListener('keydown', e => { if (e.key === 'Enter') rInp.focus(); });
+    rInp.addEventListener('keydown', e => { if (e.key === 'Enter') $('#checkDivLongBtn').click(); });
+    $('#checkDivLongBtn').onclick = () => {
+      const vq = parseInt(qInp.value, 10);
+      const vr = parseInt(rInp.value, 10);
+      if (isNaN(vq) || isNaN(vr)) { lose(t.enterNumber || ''); return; }
+      if (vq === q && vr === r) win(t.bullseye);
+      else lose(t.divCorrectLong(q, r));
+    };
   }
 
   function renderAnswerControls(ans, d, b) {
@@ -298,6 +386,6 @@
     icon: '➗',
     getName: (lang) => (window.I18N && window.I18N[lang] && window.I18N[lang].gameDivision) || 'Divide',
     newRound,
-    _test: { DDIFF, pickEquation, neighborOptions, wideOptions, generateOptions, pickTaskType, buildEquationHtml },
+    _test: { DDIFF, pickEquation, pickEquationLong, neighborOptions, wideOptions, generateOptions, pickTaskType, buildEquationHtml },
   };
 })();

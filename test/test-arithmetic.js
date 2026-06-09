@@ -108,6 +108,51 @@ describe('division: pickEquation', () => {
   });
 });
 
+describe('division: pickEquationLong (3-digit ÷ 1-digit, with remainder)', () => {
+  it('a is 3-digit (100..999 plus small slack from remainder fix)', () => {
+    for (let i = 0; i < 80; i++) {
+      const { a, b, q, r } = Div().pickEquationLong();
+      expect(a).toBeGreaterThanOrEqual(100);
+      expect(a).toBeLessThanOrEqual(999 + 8); // pickEquationLong may add up to b-1 to force remainder
+      expect(b).toBeGreaterThanOrEqual(2);
+      expect(b).toBeLessThanOrEqual(9);
+      expect(q * b + r).toBe(a);
+      expect(r).toBeGreaterThanOrEqual(0);
+      expect(r).toBeLessThan(b);
+    }
+  });
+  it('produces some exact and some inexact divisions', () => {
+    let exact = 0, inexact = 0;
+    for (let i = 0; i < 80; i++) {
+      const { r } = Div().pickEquationLong();
+      if (r === 0) exact++; else inexact++;
+    }
+    expect(exact).toBeGreaterThan(0);
+    expect(inexact).toBeGreaterThan(0);
+  });
+});
+
+describe('division: I18N for long division', () => {
+  for (const lang of ['uk', 'ru', 'es']) {
+    it(`${lang}: has divLongHint, divQuotient, divRemainder, divCorrectLong`, () => {
+      const I = window.I18N[lang];
+      expect(typeof I.divLongHint).toBe('string');
+      expect(typeof I.divQuotient).toBe('string');
+      expect(typeof I.divRemainder).toBe('string');
+      expect(typeof I.divCorrectLong).toBe('function');
+      const msg = I.divCorrectLong(125, 3);
+      expect(typeof msg).toBe('string');
+      expect(msg).toContain('125');
+      expect(msg).toContain('3');
+    });
+    it(`${lang}: taskTypeNames.divLong exists`, () => {
+      const n = window.I18N[lang].taskTypeNames.divLong;
+      expect(typeof n).toBe('string');
+      expect(n.length).toBeGreaterThan(0);
+    });
+  }
+});
+
 describe('division: wideOptions / neighborOptions', () => {
   it('wide returns 5 unique values including correct', () => {
     const opts = Div().wideOptions(7);
