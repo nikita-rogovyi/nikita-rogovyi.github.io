@@ -301,6 +301,85 @@ body.challenge-active .next-round-wrap { display: none; }
   color: #1a0838;
   animation: pulse 1.5s infinite;
 }
+/* ===== Гра задач (2 дії) ===== */
+.problem-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px 18px;
+  background: rgba(0,0,0,0.35);
+  border: 2px solid rgba(255,215,0,0.5);
+  border-radius: 14px;
+  margin: 6px auto;
+  max-width: 460px;
+}
+.problem-label {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.problem-datum-list { display: flex; flex-direction: column; gap: 6px; }
+.problem-datum-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 10px;
+  padding: 6px 12px;
+}
+.problem-datum-label {
+  color: #ffd4f0;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-align: left;
+  flex: 1;
+}
+.problem-datum-val {
+  background: linear-gradient(135deg, rgba(212,40,168,0.4), rgba(154,74,212,0.4));
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #fff;
+  min-width: 50px;
+  text-align: center;
+}
+.problem-datum-input {
+  width: 70px;
+  font-size: 1.1rem;
+  padding: 5px 8px;
+  text-align: center;
+}
+.problem-solution-label {
+  color: #ffd700;
+  font-weight: bold;
+  margin-right: 6px;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-height: 800px) {
+  .problem-block { padding: 8px 12px; margin: 4px auto; gap: 6px; }
+  .problem-datum-row { padding: 4px 10px; }
+  .problem-datum-label { font-size: 0.85rem; }
+  .problem-datum-val { font-size: 1rem; padding: 3px 9px; min-width: 42px; }
+  .problem-datum-input { width: 62px; font-size: 0.95rem; }
+}
+@media (max-height: 620px) {
+  .problem-block { padding: 6px 10px; gap: 4px; }
+  .problem-label { font-size: 0.78rem; }
+  .problem-datum-row { padding: 3px 8px; }
+  .problem-datum-label { font-size: 0.78rem; }
+  .problem-datum-val { font-size: 0.9rem; padding: 2px 8px; min-width: 36px; }
+  .problem-datum-input { width: 54px; font-size: 0.88rem; padding: 4px 6px; }
+}
+
 @media (max-height: 620px) {
   .big-equation { font-size: clamp(1.2rem, 4vw, 1.8rem); padding: 8px 14px; gap: 8px; }
   .big-equation .eq-op { padding: 4px 12px; min-width: 42px; }

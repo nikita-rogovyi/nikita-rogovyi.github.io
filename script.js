@@ -1,4 +1,4 @@
-// ============ HUNTR/X: Тренажер євро / Тренажёр евро ============
+// ============ HUNTR/X Academy — ядро та гра грошей ============
 
 // Номінали (у центах) -> id SVG-символу
 const COINS = [
@@ -57,7 +57,7 @@ const DIFFICULTY = {
 // ============ Локалізація ============
 const I18N = {
   uk: {
-    title: '🎤 HUNTR/X: Тренажер євро 🗡️',
+    title: '🎤 HUNTR/X Academy 🗡️',
     welcomeTitle: '🎤 Привіт, майбутня мисливице! 🗡️',
     welcomeSub: 'Перш ніж почати, розкажи трохи про себе.',
     welcomeLangLabel: '🌐 Мова:',
@@ -139,7 +139,7 @@ const I18N = {
     diffEasy:   'Стажерка хонмуну',
     diffMedium: 'Мисливиця HUNTR/X',
     diffHard:   'Володарка золотого меча',
-    pageTitle: 'HUNTR/X: Тренажер євро 💜🗡️',
+    pageTitle: 'HUNTR/X Academy 💜🗡️',
     score: '💜 Демонів знищено:',
     streak: '🔥 Серія:',
     round: '🎯 Раунд:',
@@ -258,7 +258,7 @@ const I18N = {
     ],
   },
   ru: {
-    title: '🎤 HUNTR/X: Тренажёр евро 🗡️',
+    title: '🎤 HUNTR/X Academy 🗡️',
     welcomeTitle: '🎤 Привет, будущая охотница! 🗡️',
     welcomeSub: 'Прежде чем начать, расскажи немного о себе.',
     welcomeLangLabel: '🌐 Язык:',
@@ -338,7 +338,7 @@ const I18N = {
     diffEasy:   'Стажёрка хонмуна',
     diffMedium: 'Охотница HUNTR/X',
     diffHard:   'Владычица золотого меча',
-    pageTitle: 'HUNTR/X: Тренажёр евро 💜🗡️',
+    pageTitle: 'HUNTR/X Academy 💜🗡️',
     score: '💜 Демонов уничтожено:',
     streak: '🔥 Серия:',
     round: '🎯 Раунд:',
@@ -457,7 +457,7 @@ const I18N = {
     ],
   },
   es: {
-    title: '🎤 HUNTR/X: Entrenador de euros 🗡️',
+    title: '🎤 HUNTR/X Academy 🗡️',
     welcomeTitle: '🎤 ¡Hola, futura caza-demonios! 🗡️',
     welcomeSub: 'Antes de empezar, cuéntanos un poco sobre ti.',
     welcomeLangLabel: '🌐 Idioma:',
@@ -537,7 +537,7 @@ const I18N = {
       '¡Concéntrate, {title} {name}! 🔮',
       '¡{name}, Rumi cree en ti — y yo también!',
     ],
-    pageTitle: 'HUNTR/X: Entrenador de euros 💜🗡️',
+    pageTitle: 'HUNTR/X Academy 💜🗡️',
     diffLabel:  '🎚️ Dificultad:',
     diffEasy:   'Aprendiz del honmoon',
     diffMedium: 'Caza-demonios HUNTR/X',

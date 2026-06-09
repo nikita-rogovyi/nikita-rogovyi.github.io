@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A browser-based math/money trainer for a 7-year-old, themed around the Netflix film **KPop Demon Hunters** (HUNTR/X vs Saja Boys). Vanilla HTML/CSS/JS — **no bundler, no framework, no Node runtime**. The whole app runs by opening `index.html` in a browser.
+**HUNTR/X Academy** — a browser-based math trainer for a 7-year-old, themed around the Netflix film **KPop Demon Hunters** (HUNTR/X vs Saja Boys). Contains several mini-games (money, weights, volumes, multiplication, division, 2-step word problems), a parent-driven challenge mode, and a per-task-type summary. Vanilla HTML/CSS/JS — **no bundler, no framework, no Node runtime**. The whole app runs by opening `index.html` in a browser.
 
 ## Commands
 

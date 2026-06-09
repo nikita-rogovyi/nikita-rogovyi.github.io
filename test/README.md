@@ -1,4 +1,4 @@
-# Тести KPop Money/Weights/Volumes Trainer
+# Тести HUNTR/X Academy
 
 ## Запуск
 
