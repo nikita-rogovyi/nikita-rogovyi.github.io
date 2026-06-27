@@ -76,6 +76,10 @@
   .title{font-family:var(--display);font-size:21px;line-height:1.3;font-weight:800;letter-spacing:-.2px}
   .hint{color:var(--muted);font-size:15px;font-weight:600;margin:6px 0 16px}
   .subcap{font-family:var(--display);color:var(--accent2);font-weight:800;font-size:14px;letter-spacing:.3px;text-transform:uppercase;margin:8px 0 6px}
+  /* separador de partes cuando un ejercicio tiene varias (cuaderno + tablet) */
+  .steptag{display:block;font-family:var(--display);font-weight:800;font-size:15px;color:#fff;
+    background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:12px;padding:9px 15px;margin:10px 0 8px;
+    box-shadow:0 6px 14px rgba(0,0,0,.3)}
 
   /* PAPEL — hoja de cuaderno */
   .paper{position:relative;margin:0 0 16px;padding:30px 18px 18px 56px;border-radius:8px 14px 14px 8px;color:#2a1838;
@@ -97,6 +101,10 @@
   .ftxt{white-space:pre}
   input.nf{width:92px;height:60px;text-align:center;border:2px solid var(--line);border-radius:13px;background:#00000033;color:var(--ink);font-size:26px;font-weight:800;-webkit-user-select:text;user-select:text}
   input.nf:focus{outline:none;border-color:var(--accent);background:#ff2e8818}
+  /* lista alineada (ej. 1º «Cien = ___»): etiquetas a la derecha, casillas en columna */
+  .numlist{width:fit-content;max-width:100%;margin:2px auto 0}
+  .numlist .frow{justify-content:flex-start;font-size:22px}
+  .numlist .ftxt{min-width:15em;text-align:right}
 
   /* signos */
   .signrow{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0;border-radius:14px;padding:4px}
@@ -204,11 +212,10 @@
 <body>
 <div class="app">
   <div class="top">
-    <a class="reportbtn" href="index.html" title="Inicio" style="text-decoration:none">‹</a>
+    <button class="reportbtn" id="backbtn" title="Atrás">‹</button>
     <div class="logo">HUNTR<b>/</b>X · Repassem el curs</div>
     <span class="badge" id="blockname"></span>
     <span class="spacer"></span>
-    <button class="reportbtn hidden" id="homeBtn">🗺️</button>
     <button class="reportbtn hidden" id="restartbtn">↺ <span data-ui="restart">Reiniciar</span></button>
     <button class="reportbtn hidden" id="reportbtn">📊 <span data-ui="resultado">Resultado</span></button>
     <div class="langs"><button class="lang" data-lang="es">ES</button><button class="lang" data-lang="uk">UK</button><button class="lang" data-lang="ru">RU</button></div>
@@ -227,10 +234,12 @@
     <div class="ex">
       <div class="exhead"><span class="num" id="exn">1º</span><div class="exmeta"><div class="eyebrow" id="exblk"></div><div class="title" id="extitle"></div></div></div>
       <div class="hint" id="exhint"></div>
+      <div class="steptag hidden" id="step1"></div>
       <div class="paper hidden" id="paper">
         <div class="pbadge">✍️ <span data-ui="paperBadge"></span> · <span class="pnum" id="ppnum"></span></div>
         <div class="ptext" id="pptext"></div>
       </div>
+      <div class="steptag hidden" id="step2"></div>
       <div id="stage"></div>
       <div class="fb" id="fb"></div>
       <div class="nav">
@@ -271,7 +280,7 @@ const UI = {
        hint_choose:'Toca el artículo correcto', hint_orderw:'Arrastra las palabras para ordenar la frase',
        hint_paper:'Escríbelo a mano en tu cuaderno', hint_dictado:'Un adulto lee el dictado; tú lo escribes en tu cuaderno',
        hint_problem:'Resuelve y escribe el resultado (R =)', hint_calc:'Calcula y escribe el resultado (puedes usar el cuaderno)',
-       dict_show:'Leer (adulto)', dict_forAdult:'Para el adulto — léelo en voz alta',
+       dict_show:'Leer (adulto)', dict_forAdult:'Para el adulto — léelo en voz alta', step1:'①  Primero — en el cuaderno', step2:'②  Después — en la tablet',
        st_first:'✅ a la primera', st_retry:'🟡 con intentos', st_pending:'⚪ sin terminar' },
   uk:{ resultado:'Результат', restart:'Скинути все', restartConfirm:'Почати цей блок спочатку? Прогрес буде стерто.', resetAllConfirm:'Стерти прогрес усіх 4 блоків?',
        check:'Перевірити', good:'Молодець! 🎉', bad:'Майже... подивись, що підсвічено, і спробуй ще',
@@ -285,7 +294,7 @@ const UI = {
        hint_choose:'Торкнись правильного артикля', hint_orderw:'Перетягни слова, щоб скласти речення',
        hint_paper:'Напиши від руки у зошиті', hint_dictado:'Дорослий читає диктант; ти пишеш у зошиті',
        hint_problem:'Розв’яжи і напиши результат (R =)', hint_calc:'Обчисли і напиши результат (можна в зошиті)',
-       dict_show:'Читати (дорослий)', dict_forAdult:'Для дорослого — прочитай вголос',
+       dict_show:'Читати (дорослий)', dict_forAdult:'Для дорослого — прочитай вголос', step1:'①  Спочатку — у зошиті', step2:'②  Потім — на планшеті',
        st_first:'✅ з першого разу', st_retry:'🟡 зі спробами', st_pending:'⚪ не завершено' },
   ru:{ resultado:'Результат', restart:'Сбросить прогресс', restartConfirm:'Начать этот блок сначала? Прогресс будет удалён.', resetAllConfirm:'Стереть прогресс всех 4 блоков?',
        check:'Проверить', good:'Молодец! 🎉', bad:'Почти... посмотри, что подсвечено, и попробуй ещё',
@@ -299,7 +308,7 @@ const UI = {
        hint_choose:'Нажми правильный артикль', hint_orderw:'Перетаскивай слова, чтобы собрать фразу',
        hint_paper:'Напиши от руки в тетради', hint_dictado:'Взрослый читает диктант; ты пишешь в тетради',
        hint_problem:'Реши и напиши результат (R =)', hint_calc:'Посчитай и напиши результат (можно в тетради)',
-       dict_show:'Прочитать (взрослый)', dict_forAdult:'Для взрослого — прочитай вслух',
+       dict_show:'Прочитать (взрослый)', dict_forAdult:'Для взрослого — прочитай вслух', step1:'①  Сначала — в тетради', step2:'②  Потом — на планшете',
        st_first:'✅ с первого раза', st_retry:'🟡 с попытками', st_pending:'⚪ не завершено' },
 };
 let lang = (function(){ try{ return localStorage.getItem('rep_lang')||'es'; }catch(e){ return 'es'; } })();
@@ -454,12 +463,12 @@ function wBuckets(root, buckets){
 /* ===== contenido de los 4 bloques (texto exacto del listado) ===== */
 const MATES = [
   { n:'1º', title:'Lee y escribe los siguientes números', hint:'hint_num',
-    paper:'Escribe con letra: 98, 257, 512, 871',
-    paperKey:'98 = noventa y ocho · 257 = doscientos cincuenta y siete · 512 = quinientos doce · 871 = ochocientos setenta y uno',
-    build(r){ r.innerHTML='<div class="subcap">Escribe con número</div><div id="n1"></div>';
+    paper:'Escribe con letra:', lines:['98 →','257 →','512 →','871 →'],
+    paperKey:'98 → noventa y ocho · 257 → doscientos cincuenta y siete · 512 → quinientos doce · 871 → ochocientos setenta y uno',
+    build(r){ r.innerHTML='<div class="subcap">Escribe con número</div><div id="n1" class="numlist"></div>';
       return wFields(r.querySelector('#n1'),[ [tok('Cien = '),nf(100,3)],[tok('Trescientos veinticinco = '),nf(325,3)],[tok('Ochenta y tres = '),nf(83,3)],[tok('Novecientos diez = '),nf(910,3)] ]); } },
   { n:'2º', title:'Escribe con letra los números ordinales', hint:'hint_paper',
-    paper:'Escribe con letra: 1º · 2º · 3º · 4º · 5º · 6º · 7º · 8º · 9º · 10º',
+    paper:'Escribe con letra:', lines:['1º →','2º →','3º →','4º →','5º →','6º →','7º →','8º →','9º →','10º →'],
     paperKey:'1º primero · 2º segundo · 3º tercero · 4º cuarto · 5º quinto · 6º sexto · 7º séptimo · 8º octavo · 9º noveno · 10º décimo' },
   { n:'3º', title:'Coloca los signos > (mayor que), < (menor que) y = (igual que)', hint:'hint_signs',
     build:r=>wSigns(r,[ {a:259,b:10,ans:'gt'},{a:103,b:103,ans:'eq'},{a:84,b:742,ans:'lt'},{a:964,b:200,ans:'gt'},{a:610,b:610,ans:'eq'},{a:115,b:896,ans:'lt'} ]) },
@@ -553,7 +562,6 @@ let curBlock=null, current=null;
 const $=id=>document.getElementById(id);
 function show(view){ ['homeview','exview','repview'].forEach(v=>$(v).classList.toggle('hidden', v!==view));
   const inBlock = view!=='homeview';
-  $('homeBtn').classList.toggle('hidden', !inBlock);
   $('reportbtn').classList.toggle('hidden', !inBlock);
   $('restartbtn').classList.toggle('hidden', inBlock);     // reset general: solo en el mapa
   const b = curBlock ? BLOCKS.find(x=>x.id===curBlock) : null;
@@ -594,6 +602,10 @@ function render(){
     let h=''; if(ex.paper) h+='<div class="pintro">'+ex.paper+'</div>'; if(ex.lines) h+=ex.lines.map(l=>'<div class="pline">'+l+'</div>').join('');
     $('pptext').innerHTML=h; }
   else pb.classList.add('hidden');
+  // ejercicio con dos partes (cuaderno + tablet): marcar pasos para no saltarse la primera
+  const multi = !!((ex.paper||ex.lines) && ex.build);
+  $('step1').classList.toggle('hidden', !multi); $('step2').classList.toggle('hidden', !multi);
+  if(multi){ $('step1').textContent=t('step1'); $('step2').textContent=t('step2'); }
   const stage=$('stage'); stage.innerHTML='';
   current = ex.build ? ex.build(stage) : null;
   if(ex.extra) ex.extra(stage);
@@ -653,7 +665,8 @@ function applyLang(){ document.querySelectorAll('.lang').forEach(b=>b.classList.
 $('next').onclick=onNext;
 $('prev').onclick=()=>go(-1);
 $('reportbtn').onclick=showReport;
-$('homeBtn').onclick=showHome;
+// «‹» contextual: dentro de un bloque → al mapa; en el mapa → al inicio (lanzador)
+$('backbtn').onclick=()=>{ if(curBlock) showHome(); else location.assign('index.html'); };
 $('backhome').onclick=showHome;
 function restartBlock(){ const blk=BLOCKS.find(b=>b.id===curBlock);
   DB.blocks[curBlock]={ results:blk.exercises.map(()=>({status:'pending',attempts:0})), paper:blk.exercises.map(()=>null), seen:blk.exercises.map(()=>false), i:0 };
