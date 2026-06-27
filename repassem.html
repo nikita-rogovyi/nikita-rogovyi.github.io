@@ -359,7 +359,8 @@ function wFields(root, rows){
     x.nf!==undefined ? `<input class="nf" inputmode="numeric" pattern="[0-9]*" maxlength="${x.max}" data-ans="${x.nf}">`
                      : `<span class="ftxt">${x.txt}</span>`).join('')+`</div>`).join('');
   const ins=()=>[...root.querySelectorAll('.nf')];
-  return { check:()=>ins().every(n=>n.value!=='' && n.value===n.dataset.ans), mark:()=>ins().forEach(n=>{ if(n.value!==n.dataset.ans) flash(n); }) };
+  const val=n=>n.value.trim();   // ignorar espacios / saltos de línea
+  return { check:()=>ins().every(n=>val(n)!=='' && val(n)===n.dataset.ans), mark:()=>ins().forEach(n=>{ if(val(n)!==n.dataset.ans) flash(n); }) };
 }
 function wSigns(root, rows){
   root.innerHTML = rows.map((r,ix)=>`<div class="signrow"><span class="signnum">${r.a}</span><span class="signbtns">`+
