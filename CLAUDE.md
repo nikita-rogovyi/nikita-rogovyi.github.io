@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**HUNTR/X Academy** — a browser-based math trainer for a 7-year-old, themed around the Netflix film **KPop Demon Hunters** (HUNTR/X vs Saja Boys). Contains several mini-games (money, weights, volumes, multiplication, division, 2-step word problems), a parent-driven challenge mode, and a per-task-type summary. Vanilla HTML/CSS/JS — **no bundler, no framework, no Node runtime**. The whole app runs by opening `index.html` in a browser.
+**HUNTR/X Academy** — a browser-based math trainer for a 7-year-old, themed around the Netflix film **KPop Demon Hunters** (HUNTR/X vs Saja Boys). Contains several mini-games (money, weights, volumes, multiplication, division, 2-step word problems), a parent-driven challenge mode, and a per-task-type summary. Vanilla HTML/CSS/JS — **no bundler, no framework, no Node runtime**. `index.html` is now a **launcher** that lets you choose among three apps: **HUNTR/X Academy** (`huntrix.html` — the game described here), **Repassem el curs** (`repassem.html`) and **Bon estiu** (`bon_estiu.html`, placeholder). The HUNTR/X game runs by opening `huntrix.html` (or via the launcher).
 
 ## Commands
 
@@ -26,7 +26,7 @@ To run a single test group, temporarily change `describe(...)` → `describe.onl
 ## Architecture
 
 ### Module loading model
-All `.js` files are loaded as **classic scripts** (not ES modules) from `index.html`. They share a single global scope and communicate through `window.*` globals. Order in `index.html` matters: `script.js` first (defines `state`, `I18N`, `registerGame`, `taskMemory`), then each game module IIFE registers itself, then `init()` runs on `DOMContentLoaded` so all games are present before the first round.
+All `.js` files are loaded as **classic scripts** (not ES modules) from `huntrix.html` (the HUNTR/X game; formerly `index.html`). They share a single global scope and communicate through `window.*` globals. Order in `huntrix.html` matters: `script.js` first (defines `state`, `I18N`, `registerGame`, `taskMemory`), then each game module IIFE registers itself, then `init()` runs on `DOMContentLoaded` so all games are present before the first round.
 
 ### Game registry pattern
 `script.js` exposes `registerGame({ id, icon, getName, newRound, _test })` and `window.Games`. Each game (`weights-game.js`, `volumes-game.js`, `multiplication-game.js`, `division-game.js`, plus the inline money game inside `script.js`) is an IIFE that:
@@ -34,7 +34,7 @@ All `.js` files are loaded as **classic scripts** (not ES modules) from `index.h
 2. Merges its own I18N keys via `Object.assign(I18N[lang], ADD[lang])`.
 3. Exposes pure helpers under its `_test` field for the test suite.
 
-Game cards in the picker modal and the challenge UI are rendered **dynamically** from `Object.values(window.Games)` — to add a new game, create a new file, register it, and add a `<script>` tag in `index.html`. No other wiring needed.
+Game cards in the picker modal and the challenge UI are rendered **dynamically** from `Object.values(window.Games)` — to add a new game, create a new file, register it, and add a `<script>` tag in `huntrix.html`. No other wiring needed.
 
 ### Central state
 `window.state` (in `script.js`) holds: language, profile (name/gender), current `gameMode`, difficulty, per-game `progress`/`goals`, and the `challenge` substate. Persisted to `localStorage`. `state.challenge.attempts` increments on lose and resets on `newRound()` — a win with `attempts === 0` counts as `firstTry` in the final summary.
@@ -55,7 +55,7 @@ The 🏆 modal lets a parent pick rounds-per-game and one global difficulty. Dur
 All sound is synthesized in WebAudio at runtime (Karplus-Strong pluck, bell chimes, formant "Ah!", demonic laugh). No audio files. Don't add audio assets — extend the synthesis in `script.js`.
 
 ### Money game specifics
-Euro banknote images (5/10/20/50/100€) are **base64-embedded** inside `index.html` (~185KB). Coins are inline SVG. Don't extract these to separate files — the single-file-load model is intentional so the game works offline by double-clicking `index.html`.
+Euro banknote images (5/10/20/50/100€) are **base64-embedded** inside `huntrix.html` (~185KB). Coins are inline SVG. Don't extract these to separate files — the single-file-load model is intentional so the game works offline by double-clicking `huntrix.html`.
 
 ## Conventions worth knowing
 
