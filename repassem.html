@@ -217,7 +217,6 @@
     <span class="badge" id="blockname"></span>
     <span class="spacer"></span>
     <button class="reportbtn hidden" id="restartbtn">↺ <span data-ui="restart">Reiniciar</span></button>
-    <button class="reportbtn hidden" id="reportbtn">📊 <span data-ui="resultado">Resultado</span></button>
     <div class="langs"><button class="lang" data-lang="es">ES</button><button class="lang" data-lang="uk">UK</button><button class="lang" data-lang="ru">RU</button></div>
   </div>
 
@@ -562,7 +561,6 @@ let curBlock=null, current=null;
 const $=id=>document.getElementById(id);
 function show(view){ ['homeview','exview','repview'].forEach(v=>$(v).classList.toggle('hidden', v!==view));
   const inBlock = view!=='homeview';
-  $('reportbtn').classList.toggle('hidden', !inBlock);
   $('restartbtn').classList.toggle('hidden', inBlock);     // reset general: solo en el mapa
   const b = curBlock ? BLOCKS.find(x=>x.id===curBlock) : null;
   $('blockname').textContent = b ? b.icon+' '+b.name : '';
@@ -664,7 +662,6 @@ function applyLang(){ document.querySelectorAll('.lang').forEach(b=>b.classList.
 
 $('next').onclick=onNext;
 $('prev').onclick=()=>go(-1);
-$('reportbtn').onclick=showReport;
 // «‹» contextual: dentro de un bloque → al mapa; en el mapa → al inicio (lanzador)
 $('backbtn').onclick=()=>{ if(curBlock) showHome(); else location.assign('index.html'); };
 $('backhome').onclick=showHome;
