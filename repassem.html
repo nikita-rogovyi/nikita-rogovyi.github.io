@@ -206,6 +206,24 @@
   .ptbtn{border:1px solid var(--line);background:#00000033;color:var(--muted);border-radius:10px;padding:6px 12px;font-size:16px;cursor:pointer}
   .ptbtn.ok{border-color:var(--good);color:var(--good);background:#34d97b18}
   .ptbtn.no{border-color:var(--bad);color:var(--bad);background:#ff4d6d18}
+  /* modal de instrucción (tareas en el cuaderno) */
+  .modal-overlay{position:fixed;inset:0;z-index:9998;background:rgba(10,4,16,.72);backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;padding:20px;animation:fadein .2s ease}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .modal{max-width:460px;width:100%;text-align:center;background:linear-gradient(165deg,var(--card2),var(--card));
+    border:1px solid var(--line);border-radius:26px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+  .mh-ic{font-size:52px;line-height:1}
+  .modal h2{font-family:var(--display);font-size:23px;margin:10px 0 6px}
+  .modal p{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 14px}
+  .mh-eg{font-family:var(--display);font-weight:800;font-size:14px;color:var(--accent2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px}
+  .he-box{text-align:left;color:#231030;border-radius:10px;padding:12px 14px 12px 40px;
+    background:linear-gradient(90deg, transparent 28px, rgba(255,46,136,.4) 28px, rgba(255,46,136,.4) 30px, transparent 30px),repeating-linear-gradient(#fffdf4,#fffdf4 29px,#cfe3f5 30px),#fffdf4}
+  .he-line{font-family:var(--display);font-weight:700;font-size:19px;line-height:30px}
+  .mh-check{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer}
+  .mh-check input{width:20px;height:20px;accent-color:var(--accent)}
+  .draft-eg{display:inline-block;white-space:pre;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-weight:700;font-size:20px;line-height:1.35;color:#231030;background:#fffdf4;border:2px dashed var(--accent2);border-radius:12px;padding:12px 20px}
+  .dh-only{color:var(--good);font-weight:800;font-family:var(--display);margin:12px 0 0}
   .hidden{display:none!important}
 </style>
 </head>
@@ -263,6 +281,41 @@
       </div>
     </div>
   </section>
+
+  <!-- instrucción: tareas en el cuaderno -->
+  <div class="modal-overlay hidden" id="paperHint">
+    <div class="modal">
+      <div class="mh-ic">✍️📔</div>
+      <h2 data-ui="ph_title"></h2>
+      <p data-ui="ph_body"></p>
+      <div class="mh-eg" data-ui="ph_eg"></div>
+      <div class="he-box">
+        <div class="he-line"><b>2º)</b> alto → bajo</div>
+        <div class="he-line">largo → corto</div>
+        <div class="he-line">ancho → estrecho …</div>
+      </div>
+      <label class="mh-check"><input type="checkbox" id="phDont" checked> <span data-ui="ph_dont"></span></label>
+      <button class="btn primary" id="phOk" data-ui="ph_ok" style="width:100%;margin-top:14px"></button>
+    </div>
+  </div>
+
+  <!-- instrucción: usar borrador para cálculos -->
+  <div class="modal-overlay hidden" id="draftHint">
+    <div class="modal">
+      <div class="mh-ic">🧮✏️</div>
+      <h2 data-ui="dh_title"></h2>
+      <p data-ui="dh_body"></p>
+      <div class="mh-eg" data-ui="dh_eg"></div>
+      <div class="draft-eg">  3569
++ 2654
++  646
+──────
+  6869</div>
+      <p class="dh-only" data-ui="dh_only"></p>
+      <label class="mh-check"><input type="checkbox" id="dhDont" checked> <span data-ui="ph_dont"></span></label>
+      <button class="btn primary" id="dhOk" data-ui="ph_ok" style="width:100%;margin-top:14px"></button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -279,7 +332,7 @@ const UI = {
        hint_choose:'Toca el artículo correcto', hint_orderw:'Arrastra las palabras para ordenar la frase',
        hint_paper:'Escríbelo a mano en tu cuaderno', hint_dictado:'Un adulto lee el dictado; tú lo escribes en tu cuaderno',
        hint_problem:'Resuelve y escribe el resultado (R =)', hint_calc:'Calcula y escribe el resultado (puedes usar el cuaderno)',
-       dict_show:'Leer (adulto)', dict_forAdult:'Para el adulto — léelo en voz alta', step1:'①  Primero — en el cuaderno', step2:'②  Después — en la tablet',
+       dict_show:'Leer (adulto)', dict_forAdult:'Para el adulto — léelo en voz alta', step1:'①  Primero — en el cuaderno', step2:'②  Después — en la tablet', ph_title:'✍️ Necesitarás cuaderno y lápiz', ph_body:'Algunos ejercicios de este bloque se escriben a mano en el cuaderno, no en la tablet.', ph_eg:'Escribe el número del ejercicio y resuélvelo así:', ph_dont:'No volver a mostrar', ph_ok:'¡Entendido!', dh_title:'🧮 Usa un papel para las cuentas', dh_body:'Las cuentas grandes (en columna) hazlas en un papel o borrador aparte.', dh_eg:'Por ejemplo:', dh_only:'Aquí escribe solo el resultado ✏️',
        st_first:'✅ a la primera', st_retry:'🟡 con intentos', st_pending:'⚪ sin terminar' },
   uk:{ resultado:'Результат', restart:'Скинути все', restartConfirm:'Почати цей блок спочатку? Прогрес буде стерто.', resetAllConfirm:'Стерти прогрес усіх 4 блоків?',
        check:'Перевірити', good:'Молодець! 🎉', bad:'Майже... подивись, що підсвічено, і спробуй ще',
@@ -293,7 +346,7 @@ const UI = {
        hint_choose:'Торкнись правильного артикля', hint_orderw:'Перетягни слова, щоб скласти речення',
        hint_paper:'Напиши від руки у зошиті', hint_dictado:'Дорослий читає диктант; ти пишеш у зошиті',
        hint_problem:'Розв’яжи і напиши результат (R =)', hint_calc:'Обчисли і напиши результат (можна в зошиті)',
-       dict_show:'Читати (дорослий)', dict_forAdult:'Для дорослого — прочитай вголос', step1:'①  Спочатку — у зошиті', step2:'②  Потім — на планшеті',
+       dict_show:'Читати (дорослий)', dict_forAdult:'Для дорослого — прочитай вголос', step1:'①  Спочатку — у зошиті', step2:'②  Потім — на планшеті', ph_title:'✍️ Знадобляться зошит і ручка', ph_body:'Деякі завдання цього блоку виконуються від руки в зошиті, а не на планшеті.', ph_eg:'Запиши номер завдання і виконай його за зразком:', ph_dont:'Більше не показувати', ph_ok:'Зрозуміло!', dh_title:'🧮 Використовуй чернетку', dh_body:'Великі приклади рахуй стовпчиком на чернетці (на окремому аркуші).', dh_eg:'Наприклад:', dh_only:'Сюди впиши лише відповідь ✏️',
        st_first:'✅ з першого разу', st_retry:'🟡 зі спробами', st_pending:'⚪ не завершено' },
   ru:{ resultado:'Результат', restart:'Сбросить прогресс', restartConfirm:'Начать этот блок сначала? Прогресс будет удалён.', resetAllConfirm:'Стереть прогресс всех 4 блоков?',
        check:'Проверить', good:'Молодец! 🎉', bad:'Почти... посмотри, что подсвечено, и попробуй ещё',
@@ -307,7 +360,7 @@ const UI = {
        hint_choose:'Нажми правильный артикль', hint_orderw:'Перетаскивай слова, чтобы собрать фразу',
        hint_paper:'Напиши от руки в тетради', hint_dictado:'Взрослый читает диктант; ты пишешь в тетради',
        hint_problem:'Реши и напиши результат (R =)', hint_calc:'Посчитай и напиши результат (можно в тетради)',
-       dict_show:'Прочитать (взрослый)', dict_forAdult:'Для взрослого — прочитай вслух', step1:'①  Сначала — в тетради', step2:'②  Потом — на планшете',
+       dict_show:'Прочитать (взрослый)', dict_forAdult:'Для взрослого — прочитай вслух', step1:'①  Сначала — в тетради', step2:'②  Потом — на планшете', ph_title:'✍️ Понадобятся тетрадь и ручка', ph_body:'Некоторые задания этого блока выполняются от руки в тетради, а не на планшете.', ph_eg:'Запиши номер задания и выполни его по образцу:', ph_dont:'Больше не показывать', ph_ok:'Понятно!', dh_title:'🧮 Используй черновик', dh_body:'Большие примеры считай столбиком на черновике (на отдельном листе).', dh_eg:'Например:', dh_only:'Сюда впиши только ответ ✏️',
        st_first:'✅ с первого раза', st_retry:'🟡 с попытками', st_pending:'⚪ не завершено' },
 };
 let lang = (function(){ try{ return localStorage.getItem('rep_lang')||'es'; }catch(e){ return 'es'; } })();
@@ -587,8 +640,15 @@ function showHome(){ curBlock=null; show('homeview');
 
 function isCompleted(id){ const blk=BLOCKS.find(b=>b.id===id), S=blockState(id);
   return blk.exercises.every((e,k)=> (!e.build || S.results[k].status!=='pending') && (!e.paper || S.seen[k])); }
-// bloque ya pasado → mostrar el resultado directamente (sin repasar uno a uno)
-function openBlock(id){ curBlock=id; if(isCompleted(id)) showReport(); else render(); }
+function blockHasPaper(id){ return BLOCKS.find(b=>b.id===id).exercises.some(e=>e.paper||e.lines); }
+let pendingAfterHint=null;
+function showHint(modalId, checkboxId, cb){ pendingAfterHint=cb; $(checkboxId).checked=true; $(modalId).classList.remove('hidden'); }
+// bloque ya pasado → resultado; 1ª vez: instrucción según el tipo de bloque
+function openBlock(id){ curBlock=id;
+  if(isCompleted(id)){ showReport(); return; }
+  if(blockHasPaper(id)){ if(!DB.noPaperHint){ showHint('paperHint','phDont',render); return; } }
+  else if(!DB.noDraftHint){ showHint('draftHint','dhDont',render); return; }
+  render(); }
 
 function render(){
   show('exview');
@@ -666,6 +726,9 @@ $('prev').onclick=()=>go(-1);
 // «‹» contextual: dentro de un bloque → al mapa; en el mapa → al inicio (lanzador)
 $('backbtn').onclick=()=>{ if(curBlock) showHome(); else location.assign('index.html'); };
 $('backhome').onclick=showHome;
+function closeHint(modalId, flag, checkboxId){ if($(checkboxId).checked){ DB[flag]=true; saveDB(); } $(modalId).classList.add('hidden'); const cb=pendingAfterHint; pendingAfterHint=null; if(cb) cb(); }
+$('phOk').onclick=()=>closeHint('paperHint','noPaperHint','phDont');
+$('dhOk').onclick=()=>closeHint('draftHint','noDraftHint','dhDont');
 function restartBlock(){ const blk=BLOCKS.find(b=>b.id===curBlock);
   DB.blocks[curBlock]={ results:blk.exercises.map(()=>({status:'pending',attempts:0})), paper:blk.exercises.map(()=>null), seen:blk.exercises.map(()=>false), i:0 };
   if(curBlock==='castellano'){ DB.dict=Math.floor(Math.random()*DICTADOS.length); }
