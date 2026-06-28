@@ -12,7 +12,7 @@
     --body: ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%;overflow-x:hidden}
+  html,body{margin:0;height:100%;overflow-x:hidden;overscroll-behavior:none}
   body{
     background:
       radial-gradient(900px 520px at 18% -8%, rgba(255,46,136,.30), transparent 60%),
@@ -106,8 +106,8 @@
   .numlist .frow{justify-content:flex-start;font-size:22px}
   .numlist .ftxt{min-width:15em;text-align:right}
 
-  /* signos */
-  .signrow{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0;border-radius:14px;padding:4px}
+  /* signos — cada comparación en su propia zona */
+  .signrow{display:flex;align-items:center;justify-content:center;gap:14px;margin:12px 0;border-radius:16px;padding:10px 14px;background:#00000026;border:1px solid var(--line)}
   .signnum{font-size:30px;font-weight:800;min-width:78px;text-align:center}
   .signbtns{display:flex;gap:8px}
   .sbtn{width:60px;height:60px;border-radius:16px;font-size:30px;font-weight:800;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
@@ -151,7 +151,7 @@
   .abrods{display:flex;gap:12px}
   .abrod{display:flex;flex-direction:column-reverse;align-items:center;gap:6px;width:60px}
   .ablabel{order:-1;margin-top:6px;font-family:var(--display);font-weight:800;font-size:18px}
-  .abead{width:48px;height:19px;border-radius:50%;background:#3a2a55;border:1px solid var(--line);cursor:pointer}
+  .abead{width:48px;height:19px;border-radius:50%;background:#4d3a6e;border:2px solid #9b78c9;cursor:pointer}
   .abrod[data-rk="C"] .ablabel{color:#ff7ab6} .abrod[data-rk="D"] .ablabel{color:#b79bff} .abrod[data-rk="U"] .ablabel{color:#ffd23f}
   .abrod[data-rk="C"] .abead.on{background:linear-gradient(180deg,#ff8ec2,#ff2e88);border-color:#ff9ecb}
   .abrod[data-rk="D"] .abead.on{background:linear-gradient(180deg,#c3b0ff,#7b3cff);border-color:#cdbcff}
@@ -161,10 +161,13 @@
   .clocks{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:6px 0}
   .clockcard{text-align:center;border-radius:14px;padding:6px}
   .clocklabel{font-size:16px;font-weight:700;margin-bottom:4px}
-  svg.clk{width:150px;height:150px;touch-action:none}
+  svg.clk{width:208px;height:208px;touch-action:none}
   .cface{fill:#241433;stroke:#3d2456;stroke-width:4}
-  .hh{stroke:#ffd24d;stroke-width:7;stroke-linecap:round} .mh{stroke:#ff2d78;stroke-width:5;stroke-linecap:round}
+  .hh{stroke:#ffd24d;stroke-width:11;stroke-linecap:round} .mh{stroke:#ff2e88;stroke-width:5;stroke-linecap:round}
   .cpin{fill:#fff} .ctick{stroke:#7b5cff;stroke-width:2}
+  .cnum{fill:var(--ink);font-family:var(--display);font-weight:800;font-size:16px;text-anchor:middle;dominant-baseline:central}
+  .clk-legend{text-align:center;font-family:var(--display);font-weight:800;font-size:14px;color:var(--muted);margin:0 0 10px}
+  .clk-legend .lg-h{color:#ffd24d;font-size:18px} .clk-legend .lg-m{color:var(--accent);font-size:18px}
 
   /* cubos / formas */
   .pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:54px;margin:6px 0 14px;padding:8px;border:1px dashed var(--line);border-radius:14px}
@@ -327,7 +330,7 @@ const UI = {
        porrevisar:'por revisar', answerKey:'Respuesta correcta', pickBlock:'Sigue el camino de retos ✨',
        hint_num:'Escribe los números con el teclado', hint_signs:'Elige el signo: > , < o =',
        hint_order:'Arrastra para ordenar (de mayor a menor)', hint_abacus:'Toca las cuentas: C centenas · D decenas · U unidades',
-       hint_clock:'Mueve las agujas con el dedo', hint_buckets:'Arrastra cada objeto a su forma',
+       hint_clock:'Mueve las agujas con el dedo', clk_hours:'horas (corta)', clk_min:'minutos (larga)', hint_buckets:'Arrastra cada objeto a su forma',
        hint_pairs:'Toca una parte y luego la otra para formar la palabra', hint_syll:'Toca entre las letras para separar en sílabas',
        hint_choose:'Toca el artículo correcto', hint_orderw:'Arrastra las palabras para ordenar la frase',
        hint_paper:'Escríbelo a mano en tu cuaderno', hint_dictado:'Un adulto lee el dictado; tú lo escribes en tu cuaderno',
@@ -341,7 +344,7 @@ const UI = {
        porrevisar:'на перевірку', answerKey:'Правильна відповідь', pickBlock:'Іди шляхом завдань ✨',
        hint_num:'Набери числа на клавіатурі', hint_signs:'Обери знак: > , < або =',
        hint_order:'Перетягни, щоб упорядкувати (від більшого)', hint_abacus:'Торкайся кісточок: C сотні · D десятки · U одиниці',
-       hint_clock:'Рухай стрілки пальцем', hint_buckets:'Перетягни предмет до його форми',
+       hint_clock:'Рухай стрілки пальцем', clk_hours:'години (коротка)', clk_min:'хвилини (довга)', hint_buckets:'Перетягни предмет до його форми',
        hint_pairs:'Торкнись однієї частини, потім іншої', hint_syll:'Торкайся між літерами, щоб поділити на склади',
        hint_choose:'Торкнись правильного артикля', hint_orderw:'Перетягни слова, щоб скласти речення',
        hint_paper:'Напиши від руки у зошиті', hint_dictado:'Дорослий читає диктант; ти пишеш у зошиті',
@@ -355,7 +358,7 @@ const UI = {
        porrevisar:'на проверку', answerKey:'Правильный ответ', pickBlock:'Иди по пути заданий ✨',
        hint_num:'Набери числа на клавиатуре', hint_signs:'Выбери знак: > , < или =',
        hint_order:'Перетаскивай, чтобы упорядочить (от большего)', hint_abacus:'Нажимай косточки: C сотни · D десятки · U единицы',
-       hint_clock:'Двигай стрелки пальцем', hint_buckets:'Перетащи предмет к его форме',
+       hint_clock:'Двигай стрелки пальцем', clk_hours:'часы (короткая)', clk_min:'минуты (длинная)', hint_buckets:'Перетащи предмет к его форме',
        hint_pairs:'Нажми одну часть, потом другую', hint_syll:'Нажимай между буквами, чтобы разделить на слоги',
        hint_choose:'Нажми правильный артикль', hint_orderw:'Перетаскивай слова, чтобы собрать фразу',
        hint_paper:'Напиши от руки в тетради', hint_dictado:'Взрослый читает диктант; ты пишешь в тетради',
@@ -407,13 +410,18 @@ function startDrag(el, e, opts){
 /* ===== widgets ===== */
 function tok(s){ return {txt:s}; }
 function nf(ans,max){ return {nf:String(ans),max:max||5}; }
-function wFields(root, rows){
+function wFields(root, rows, opts){
+  opts=opts||{};
   root.innerHTML = rows.map(row=>`<div class="frow">`+row.map(x=>
     x.nf!==undefined ? `<input class="nf" inputmode="numeric" pattern="[0-9]*" maxlength="${x.max}" data-ans="${x.nf}">`
                      : `<span class="ftxt">${x.txt}</span>`).join('')+`</div>`).join('');
   const ins=()=>[...root.querySelectorAll('.nf')];
   const val=n=>n.value.trim();   // ignorar espacios / saltos de línea
-  return { check:()=>ins().every(n=>val(n)!=='' && val(n)===n.dataset.ans), mark:()=>ins().forEach(n=>{ if(val(n)!==n.dataset.ans) flash(n); }) };
+  // emptyZero: campo vacío cuenta como 0 (ej. centenas/decenas que valen 0)
+  const norm=n=> (val(n)==='' && opts.emptyZero) ? '0' : val(n);
+  // comparación numérica: «00» = 0, «07» = 7 (ceros a la izquierda)
+  const ok=n=>norm(n)!=='' && /^[0-9]+$/.test(norm(n)) && Number(norm(n))===Number(n.dataset.ans);
+  return { check:()=>ins().every(ok), mark:()=>ins().forEach(n=>{ if(!ok(n)) flash(n); }) };
 }
 function wSigns(root, rows){
   root.innerHTML = rows.map((r,ix)=>`<div class="signrow"><span class="signnum">${r.a}</span><span class="signbtns">`+
@@ -480,16 +488,18 @@ function wAbacus(root, targets){
   return { check:()=>targets.every((tg,ix)=>val(ix)===tg), mark:()=>targets.forEach((tg,ix)=>{ if(val(ix)!==tg) flash(cards[ix]); }) };
 }
 function genTicks(){ let s=''; for(let i=0;i<12;i++){const a=i*30*Math.PI/180; s+=`<line class="ctick" x1="${100+82*Math.sin(a)}" y1="${100-82*Math.cos(a)}" x2="${100+90*Math.sin(a)}" y2="${100-90*Math.cos(a)}"/>`;} return s; }
+function genNums(){ let s=''; for(let i=1;i<=12;i++){const a=i*30*Math.PI/180; s+=`<text class="cnum" x="${100+70*Math.sin(a)}" y="${100-70*Math.cos(a)}">${i}</text>`;} return s; }
 function wClock(root, items){
-  root.innerHTML='<div class="clocks">'+items.map((it,ix)=>`<div class="clockcard"><div class="clocklabel">${it.label}</div>`+
-    `<svg class="clk" data-ix="${ix}" viewBox="0 0 200 200"><circle class="cface" cx="100" cy="100" r="92"/>${genTicks()}`+
-    `<line class="hh" x1="100" y1="100" x2="100" y2="54"/><line class="mh" x1="100" y1="100" x2="100" y2="32"/><circle class="cpin" cx="100" cy="100" r="6"/></svg></div>`).join('')+'</div>';
+  root.innerHTML='<div class="clk-legend"><span class="lg-h">●</span> '+t('clk_hours')+' · <span class="lg-m">●</span> '+t('clk_min')+'</div>'+
+    '<div class="clocks">'+items.map((it,ix)=>`<div class="clockcard"><div class="clocklabel">${it.label}</div>`+
+    `<svg class="clk" data-ix="${ix}" viewBox="0 0 200 200"><circle class="cface" cx="100" cy="100" r="92"/>${genTicks()}${genNums()}`+
+    `<line class="hh" x1="100" y1="100" x2="100" y2="62"/><line class="mh" x1="100" y1="100" x2="100" y2="20"/><circle class="cpin" cx="100" cy="100" r="6"/></svg></div>`).join('')+'</div>';
   const st=items.map(()=>({h:0,m:0})), cards=[...root.querySelectorAll('.clockcard')];
   const setHand=(svg,cls,len,ang)=>{ const r=ang*Math.PI/180, l=svg.querySelector(cls); l.setAttribute('x2',100+len*Math.sin(r)); l.setAttribute('y2',100-len*Math.cos(r)); };
   root.querySelectorAll('.clk').forEach(svg=>{ const ix=+svg.dataset.ix; let drag=null;
     const angAt=e=>{ const r=svg.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*200, py=(e.clientY-r.top)/r.height*200; return (Math.atan2(px-100,-(py-100))*180/Math.PI+360)%360; };
     const cd=(a,b)=>{ let d=Math.abs(a-b)%360; return Math.min(d,360-d); };
-    const draw=()=>{ setHand(svg,'.mh',64,st[ix].m); setHand(svg,'.hh',46,st[ix].h); };
+    const draw=()=>{ setHand(svg,'.mh',82,st[ix].m); setHand(svg,'.hh',38,st[ix].h); };
     const move=e=>{ const a=angAt(e); if(drag==='m')st[ix].m=a; else st[ix].h=a; draw(); };
     svg.addEventListener('pointerdown',e=>{ e.preventDefault(); try{svg.setPointerCapture(e.pointerId);}catch(_){} const a=angAt(e); drag=cd(a,st[ix].m)<=cd(a,st[ix].h)?'m':'h'; move(e); });
     svg.addEventListener('pointermove',e=>{ if(drag)move(e); });
@@ -539,7 +549,7 @@ const MATES = [
   { n:'8º', title:'Descompón estos números (ejemplo: 159 = 100 + 50 + 9)', hint:'hint_num',
     build:r=>wFields(r,[ [tok('362 = '),nf(300),tok(' + '),nf(60),tok(' + '),nf(2)],[tok('407 = '),nf(400),tok(' + '),nf(0),tok(' + '),nf(7)],[tok('647 = '),nf(600),tok(' + '),nf(40),tok(' + '),nf(7)],[tok('250 = '),nf(200),tok(' + '),nf(50),tok(' + '),nf(0)],[tok('89 = '),nf(80),tok(' + '),nf(9)] ]) },
   { n:'9º', title:'Completa (ejemplo: 146 → 1 C, 4 D, 6 U)', hint:'hint_num',
-    build(r){ const row=(l,c,d,u)=>[tok(l+' → '),nf(c,1),tok(' C, '),nf(d,1),tok(' D, '),nf(u,1),tok(' U')]; return wFields(r,[row('751',7,5,1),row('25',0,2,5),row('358',3,5,8),row('63',0,6,3),row('9',0,0,9)]); } },
+    build(r){ const row=(l,c,d,u)=>[tok(l+' → '),nf(c,1),tok(' C, '),nf(d,1),tok(' D, '),nf(u,1),tok(' U')]; return wFields(r,[row('751',7,5,1),row('25',0,2,5),row('358',3,5,8),row('63',0,6,3),row('9',0,0,9)], {emptyZero:true}); } },
   { n:'10º', title:'Dibuja la hora en los relojes', hint:'hint_clock',
     build:r=>wClock(r,[ {label:'las 4 en punto',h:4,m:0},{label:'las 10 y media',h:10,m:30},{label:'las 7 menos cuarto',h:6,m:45},{label:'las 2 y cuarto',h:2,m:15} ]) },
   { n:'11º', title:'Agrupa estos objetos según la forma que tengan', hint:'hint_buckets',
