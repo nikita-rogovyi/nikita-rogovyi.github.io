@@ -90,6 +90,7 @@
   .ptext{color:#231030}
   .pintro{font-family:var(--display);font-weight:800;font-size:19px;line-height:32px;margin-bottom:2px}
   .pline{font-family:var(--display);font-weight:700;font-size:23px;line-height:34px}
+  .psub{font-family:var(--display);font-weight:800;font-size:16px;color:#c01563;line-height:34px;margin-top:4px}
 
   /* dictado */
   .dictbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0}
@@ -140,6 +141,10 @@
   .orow{display:flex;gap:10px;flex-wrap:nowrap;justify-content:center;align-items:center;margin:14px 0;overflow-x:auto;padding:6px 2px}
   .ochip{flex:none;background:var(--card);border:2px solid var(--line);color:var(--ink);border-radius:16px;padding:14px 18px;font-size:23px;font-weight:800;cursor:grab;touch-action:none;transition:transform .12s, box-shadow .12s}
   .ochip.dragging{opacity:.3;cursor:grabbing;border-style:dashed}
+  /* cada frase a ordenar en su propia zona (10º Castellano) */
+  .ordertask{background:#00000026;border:1px solid var(--line);border-radius:16px;padding:6px 10px 10px;margin:16px 0}
+  .ordertask-lab{font-family:var(--display);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--accent2);margin:4px 0 0 4px}
+  .ordertask .orow{margin:6px 0 2px}
   .dragghost{position:fixed;left:0;top:0;margin:0;pointer-events:none;z-index:9999;box-shadow:0 14px 30px rgba(0,0,0,.5);border-color:var(--accent)!important;cursor:grabbing}
   .dropbar{flex:none;align-self:stretch;width:6px;min-height:54px;border-radius:999px;pointer-events:none;background:linear-gradient(180deg,var(--gold),var(--accent));box-shadow:0 0 14px var(--gold);animation:barpulse .7s ease-in-out infinite}
   @keyframes barpulse{0%,100%{opacity:.55;transform:scaleY(.9)}50%{opacity:1;transform:scaleY(1)}}
@@ -198,12 +203,12 @@
   .summary b{color:var(--gold);font-size:26px}
   .repsec{font-family:var(--display);margin:16px 0 6px;font-weight:800;color:var(--accent2);text-transform:uppercase;font-size:13px;letter-spacing:.3px}
   ul.report{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-  ul.report li{display:flex;align-items:center;gap:10px;background:#00000026;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:15px}
+  ul.report li{display:flex;align-items:center;gap:10px;background:#00000026;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px}
   ul.report .rn{font-weight:800;color:var(--accent);width:38px;flex:none}
   ul.report .rs{margin-left:auto;font-size:18px;flex:none;padding-left:8px}
   ul.report li.prow{align-items:flex-start}
-  .pcol{flex:1;min-width:0} .pprompt{font-weight:700}
-  .pkey{margin-top:5px;font-size:14px;font-weight:700;color:var(--good);background:#34d97b14;border:1px solid #34d97b44;border-radius:9px;padding:6px 9px;line-height:1.5}
+  .pcol{flex:1;min-width:0} .pprompt{font-weight:700;font-size:18px}
+  .pkey{margin-top:6px;font-size:18px;font-weight:700;color:var(--good);background:#34d97b1f;border:1px solid #34d97b55;border-radius:10px;padding:9px 12px;line-height:1.65}
   .pkey b{color:var(--ink);font-weight:800}
   .ptoggle{margin-left:auto;display:flex;gap:6px;flex:none}
   .ptbtn{border:1px solid var(--line);background:#00000033;color:var(--muted);border-radius:10px;padding:6px 12px;font-size:16px;cursor:pointer}
@@ -227,6 +232,41 @@
   .draft-eg{display:inline-block;white-space:pre;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     font-weight:700;font-size:20px;line-height:1.35;color:#231030;background:#fffdf4;border:2px dashed var(--accent2);border-radius:12px;padding:12px 20px}
   .dh-only{color:var(--good);font-weight:800;font-family:var(--display);margin:12px 0 0}
+
+  /* === legibilidad: texto más grande y adaptable a la pantalla (tablet) === */
+  .home-title{font-size:clamp(28px,3vw+14px,40px)}
+  .home-sub{font-size:16px}
+  .title{font-size:clamp(23px,1.6vw+16px,30px)}
+  .hint{font-size:clamp(16px,1vw+12px,20px)}
+  .num{font-size:22px}
+  .eyebrow{font-size:14px}
+  .subcap{font-size:15px}
+  .steptag{font-size:16px}
+  .pintro{font-size:21px}
+  .pline{font-size:clamp(23px,2vw+14px,28px)}
+  .psub{font-size:18px}
+  .frow{font-size:clamp(26px,2vw+16px,32px)}
+  .numlist .frow{font-size:24px}
+  input.nf{font-size:30px;height:66px;width:104px}
+  .signnum{font-size:clamp(30px,2.5vw+16px,40px)}
+  .sbtn{font-size:34px;width:66px;height:66px}
+  .ochip{font-size:clamp(24px,2vw+14px,30px)}
+  .chnoun{font-size:28px}
+  .chbtn{font-size:23px;height:56px;min-width:64px}
+  .syl-l{font-size:clamp(32px,3vw+16px,42px)}
+  .bchip{font-size:21px}
+  .bktitle{font-size:18px}
+  .pchip{font-size:23px}
+  .abnum{font-size:26px}
+  .clocklabel{font-size:18px} .clk-legend{font-size:15px}
+  .qb-name{font-size:22px} .qb-prog{font-size:15px}
+  .btn{font-size:20px}
+  ul.report li{font-size:17px} .pprompt{font-size:19px} .pkey{font-size:19px}
+  @media (max-width:600px){
+    input.nf{width:84px;height:60px;font-size:26px}
+    .sbtn{width:58px;height:58px;font-size:30px}
+    .numlist .ftxt{min-width:11em}
+  }
   .hidden{display:none!important}
 </style>
 </head>
@@ -264,6 +304,7 @@
       <div class="fb" id="fb"></div>
       <div class="nav">
         <button class="btn ghost" id="prev">‹</button>
+        <button class="btn ghost" id="skipbtn" title="Saltar (vista previa)">⏭</button><!-- TEMP: previsualización -->
         <button class="btn check" id="next" style="flex:1;margin-left:10px">›</button>
       </div>
     </div>
@@ -330,7 +371,7 @@ const UI = {
        porrevisar:'por revisar', answerKey:'Respuesta correcta', pickBlock:'Sigue el camino de retos ✨',
        hint_num:'Escribe los números con el teclado', hint_signs:'Elige el signo: > , < o =',
        hint_order:'Arrastra para ordenar (de mayor a menor)', hint_abacus:'Toca las cuentas: C centenas · D decenas · U unidades',
-       hint_clock:'Mueve las agujas con el dedo', clk_hours:'horas (corta)', clk_min:'minutos (larga)', hint_buckets:'Arrastra cada objeto a su forma',
+       hint_clock:'Mueve las agujas con el dedo', clk_hours:'horas (corta)', clk_min:'minutos (larga)', frase:'Frase', hint_buckets:'Arrastra cada objeto a su forma',
        hint_pairs:'Toca una parte y luego la otra para formar la palabra', hint_syll:'Toca entre las letras para separar en sílabas',
        hint_choose:'Toca el artículo correcto', hint_orderw:'Arrastra las palabras para ordenar la frase',
        hint_paper:'Escríbelo a mano en tu cuaderno', hint_dictado:'Un adulto lee el dictado; tú lo escribes en tu cuaderno',
@@ -344,7 +385,7 @@ const UI = {
        porrevisar:'на перевірку', answerKey:'Правильна відповідь', pickBlock:'Іди шляхом завдань ✨',
        hint_num:'Набери числа на клавіатурі', hint_signs:'Обери знак: > , < або =',
        hint_order:'Перетягни, щоб упорядкувати (від більшого)', hint_abacus:'Торкайся кісточок: C сотні · D десятки · U одиниці',
-       hint_clock:'Рухай стрілки пальцем', clk_hours:'години (коротка)', clk_min:'хвилини (довга)', hint_buckets:'Перетягни предмет до його форми',
+       hint_clock:'Рухай стрілки пальцем', clk_hours:'години (коротка)', clk_min:'хвилини (довга)', frase:'Речення', hint_buckets:'Перетягни предмет до його форми',
        hint_pairs:'Торкнись однієї частини, потім іншої', hint_syll:'Торкайся між літерами, щоб поділити на склади',
        hint_choose:'Торкнись правильного артикля', hint_orderw:'Перетягни слова, щоб скласти речення',
        hint_paper:'Напиши від руки у зошиті', hint_dictado:'Дорослий читає диктант; ти пишеш у зошиті',
@@ -358,7 +399,7 @@ const UI = {
        porrevisar:'на проверку', answerKey:'Правильный ответ', pickBlock:'Иди по пути заданий ✨',
        hint_num:'Набери числа на клавиатуре', hint_signs:'Выбери знак: > , < или =',
        hint_order:'Перетаскивай, чтобы упорядочить (от большего)', hint_abacus:'Нажимай косточки: C сотни · D десятки · U единицы',
-       hint_clock:'Двигай стрелки пальцем', clk_hours:'часы (короткая)', clk_min:'минуты (длинная)', hint_buckets:'Перетащи предмет к его форме',
+       hint_clock:'Двигай стрелки пальцем', clk_hours:'часы (короткая)', clk_min:'минуты (длинная)', frase:'Фраза', hint_buckets:'Перетащи предмет к его форме',
        hint_pairs:'Нажми одну часть, потом другую', hint_syll:'Нажимай между буквами, чтобы разделить на слоги',
        hint_choose:'Нажми правильный артикль', hint_orderw:'Перетаскивай слова, чтобы собрать фразу',
        hint_paper:'Напиши от руки в тетради', hint_dictado:'Взрослый читает диктант; ты пишешь в тетради',
@@ -469,10 +510,16 @@ function buildOrderRow(items, correct){
   const place=(c,x)=>{ const ref=target(x); if(bar){ bar.remove(); bar=null; } if(ref) row.insertBefore(c,ref); else row.appendChild(c); };
   row.querySelectorAll('.ochip').forEach(c=>c.addEventListener('pointerdown',e=>startDrag(c,e,{ ghost:true, onMove:ev=>showBar(ev.clientX), onDrop:ev=>place(c,ev.clientX) })));
   const cur=()=>[...row.querySelectorAll('.ochip')].map(c=>c.dataset.v);
-  return { el:row, check:()=>cur().join('|')===correct.join('|'), mark:()=>{ if(cur().join('|')!==correct.join('|')) row.querySelectorAll('.ochip').forEach(c=>flash(c)); } };
+  // correct puede ser un orden único o varios órdenes válidos (p.ej. «tomates y manzanas» = «manzanas y tomates»)
+  const accepted=(Array.isArray(correct[0])?correct:[correct]).map(a=>a.map(String).join('|'));
+  const isOk=()=>accepted.includes(cur().join('|'));
+  return { el:row, check:isOk, mark:()=>{ if(!isOk()) row.querySelectorAll('.ochip').forEach(c=>flash(c)); } };
 }
 function wOrder(root, items, correct){ const r=buildOrderRow(items.map(String), correct.map(String)); root.appendChild(r.el); return { check:r.check, mark:r.mark }; }
-function wOrderWords(root, sentences){ const rows=sentences.map(s=>buildOrderRow(s.words, s.correct)); rows.forEach(r=>root.appendChild(r.el));
+function wOrderWords(root, sentences){ const rows=sentences.map(s=>buildOrderRow(s.words, s.correct));
+  rows.forEach((r,i)=>{ const box=document.createElement('div'); box.className='ordertask';
+    const lab=document.createElement('div'); lab.className='ordertask-lab'; lab.textContent=t('frase')+' '+(i+1);
+    box.appendChild(lab); box.appendChild(r.el); root.appendChild(box); });
   return { check:()=>rows.every(r=>r.check()), mark:()=>rows.forEach(r=>r.mark()) }; }
 function wAbacus(root, targets){
   const st=targets.map(()=>({C:0,D:0,U:0}));
@@ -563,8 +610,8 @@ const CASTELLANO = [
     paper:'Escribe el contrario (ej.: blanco → negro):', lines:['alto →','largo →','ancho →','grande →','delgado →'],
     paperKey:'alto → bajo · largo → corto · ancho → estrecho · grande → pequeño · delgado → gordo' },
   { n:'3º', title:'Escribe el plural o el singular según corresponda', hint:'hint_paper',
-    paper:'Escribe el plural o el singular (ej.: raíz → raíces · voces → voz):', lines:['Maíz →','Arroz →','Nuez →','perdices →','luces →','peces →'],
-    paperKey:'Maíz → maíces · Arroz → arroces · Nuez → nueces · perdices → perdiz · luces → luz · peces → pez' },
+    paper:'Escribe el plural o el singular (ej.: raíz → raíces · voces → voz):', lines:[ {h:'Singular → plural:'}, 'Maíz →','Arroz →','Nuez →', {h:'Plural → singular:'}, 'perdices →','luces →','peces →' ],
+    paperKey:'Plural: Maíz → maíces · Arroz → arroces · Nuez → nueces — Singular: perdices → perdiz · luces → luz · peces → pez' },
   { n:'4º', title:'Alarga estas frases', hint:'hint_paper', paper:'Alarga estas frases:', lines:['El perro y el gato …','Yo juego en el parque …'],
     paperKey:'Respuesta libre (añade palabras). Ej.: «El perro y el gato juegan en el jardín.» · «Yo juego en el parque con mis amigos.»' },
   { n:'5º', title:'Escribe 3 palabras de la misma familia', hint:'hint_paper', paper:'Escribe 3 palabras de la misma familia:', lines:['Carne →','Fruta →'],
@@ -580,7 +627,7 @@ const CASTELLANO = [
     build:r=>wChoose(r,[ {noun:'muñeca',ans:'la'},{noun:'calles',ans:'las'},{noun:'coches',ans:'los'},{noun:'perro',ans:'el'},{noun:'colegio',ans:'el'},{noun:'conejos',ans:'los'} ], ART) },
   { n:'10º', title:'Ordena las frases', hint:'hint_orderw',
     build:r=>wOrderWords(r,[ {words:['Yo','como','arroz','con','pollo'], correct:['Yo','como','arroz','con','pollo']},
-      {words:['La','frutera','vende','tomates','y','manzanas'], correct:['La','frutera','vende','tomates','y','manzanas']} ]) },
+      {words:['La','frutera','vende','tomates','y','manzanas'], correct:[['La','frutera','vende','tomates','y','manzanas'],['La','frutera','vende','manzanas','y','tomates']]} ]) },
   { n:'—', title:'Dictado', hint:'hint_dictado', paper:'Escribe el dictado en tu cuaderno',
     get paperKey(){ return currentDict().join(' '); },
     extra(stage){ const d=currentDict(); const row=document.createElement('div'); row.className='dictbtns';
@@ -668,7 +715,8 @@ function render(){
   $('exn').textContent=ex.n; $('extitle').textContent=ex.title; $('exhint').textContent=t(ex.hint);
   const pb=$('paper');
   if(ex.paper || ex.lines){ pb.classList.remove('hidden'); $('ppnum').textContent=ex.n;
-    let h=''; if(ex.paper) h+='<div class="pintro">'+ex.paper+'</div>'; if(ex.lines) h+=ex.lines.map(l=>'<div class="pline">'+l+'</div>').join('');
+    let h=''; if(ex.paper) h+='<div class="pintro">'+ex.paper+'</div>';
+    if(ex.lines) h+=ex.lines.map(l=> (typeof l==='object') ? '<div class="psub">'+l.h+'</div>' : '<div class="pline">'+l+'</div>').join('');
     $('pptext').innerHTML=h; }
   else pb.classList.add('hidden');
   // ejercicio con dos partes (cuaderno + tablet): marcar pasos para no saltarse la primera
@@ -733,6 +781,7 @@ function applyLang(){ document.querySelectorAll('.lang').forEach(b=>b.classList.
 
 $('next').onclick=onNext;
 $('prev').onclick=()=>go(-1);
+$('skipbtn').onclick=advance;  // TEMP: saltar sin resolver (previsualización)
 // «‹» contextual: dentro de un bloque → al mapa; en el mapa → al inicio (lanzador)
 $('backbtn').onclick=()=>{ if(curBlock) showHome(); else location.assign('index.html'); };
 $('backhome').onclick=showHome;
