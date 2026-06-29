@@ -218,31 +218,33 @@
   .modal-overlay{position:fixed;inset:0;z-index:9998;background:rgba(10,4,16,.72);backdrop-filter:blur(4px);
     display:flex;align-items:center;justify-content:center;padding:20px;animation:fadein .2s ease}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
-  .modal{max-width:460px;width:100%;text-align:center;background:linear-gradient(165deg,var(--card2),var(--card));
-    border:1px solid var(--line);border-radius:26px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
-  .mh-ic{font-size:52px;line-height:1}
-  .modal h2{font-family:var(--display);font-size:23px;margin:10px 0 6px}
-  .modal p{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 14px}
-  .mh-eg{font-family:var(--display);font-weight:800;font-size:14px;color:var(--accent2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px}
-  .he-box{text-align:left;color:#231030;border-radius:10px;padding:12px 14px 12px 40px;
-    background:linear-gradient(90deg, transparent 28px, rgba(255,46,136,.4) 28px, rgba(255,46,136,.4) 30px, transparent 30px),repeating-linear-gradient(#fffdf4,#fffdf4 29px,#cfe3f5 30px),#fffdf4}
-  .he-line{font-family:var(--display);font-weight:700;font-size:19px;line-height:30px}
-  .mh-check{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer}
-  .mh-check input{width:20px;height:20px;accent-color:var(--accent)}
+  /* adaptable: ancho y alto según pantalla; en tablet más amplio */
+  .modal{width:min(94vw,620px);max-height:92vh;overflow-y:auto;text-align:center;background:linear-gradient(165deg,var(--card2),var(--card));
+    border:1px solid var(--line);border-radius:26px;padding:clamp(22px,3.5vw,36px) clamp(20px,3.2vw,32px);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+  .mh-ic{font-size:clamp(52px,9vw,72px);line-height:1}
+  .modal h2{font-family:var(--display);font-size:clamp(23px,3.6vw,32px);margin:12px 0 8px;line-height:1.2}
+  .modal p{color:var(--muted);font-size:clamp(15px,2.6vw,20px);line-height:1.5;margin:0 0 16px}
+  .mh-eg{font-family:var(--display);font-weight:800;font-size:clamp(14px,2.2vw,17px);color:var(--accent2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px}
+  .he-box{text-align:left;color:#231030;border-radius:10px;padding:14px 16px 14px 46px;
+    background:linear-gradient(90deg, transparent 32px, rgba(255,46,136,.4) 32px, rgba(255,46,136,.4) 34px, transparent 34px),repeating-linear-gradient(#fffdf4,#fffdf4 33px,#cfe3f5 34px),#fffdf4}
+  .he-line{font-family:var(--display);font-weight:700;font-size:clamp(20px,3.4vw,26px);line-height:34px}
+  .mh-check{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:18px;color:var(--muted);font-size:clamp(14px,2.4vw,17px);font-weight:700;cursor:pointer}
+  .mh-check input{width:22px;height:22px;accent-color:var(--accent)}
   .draft-eg{display:inline-block;white-space:pre;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    font-weight:700;font-size:20px;line-height:1.35;color:#231030;background:#fffdf4;border:2px dashed var(--accent2);border-radius:12px;padding:12px 20px}
-  .dh-only{color:var(--good);font-weight:800;font-family:var(--display);margin:12px 0 0}
+    font-weight:700;font-size:clamp(20px,3.6vw,28px);line-height:1.4;color:#231030;background:#fffdf4;border:2px dashed var(--accent2);border-radius:12px;padding:14px 22px}
+  .dh-only{color:var(--good);font-weight:800;font-family:var(--display);font-size:clamp(15px,2.6vw,19px);margin:14px 0 0}
 
   /* === legibilidad: texto más grande y adaptable a la pantalla (tablet) === */
   .home-title{font-size:clamp(28px,3vw+14px,40px)}
   .home-sub{font-size:16px}
-  .title{font-size:clamp(23px,1.6vw+16px,30px)}
+  .title{font-size:clamp(24px,2vw+16px,32px)}
+  .title.big{font-size:clamp(25px,2.4vw+16px,36px)}  /* enunciados de Problemas, más grandes */
   .hint{font-size:clamp(16px,1vw+12px,20px)}
   .num{font-size:22px}
   .eyebrow{font-size:14px}
   .subcap{font-size:15px}
   .steptag{font-size:16px}
-  .pintro{font-size:21px}
+  .pintro{font-size:clamp(20px,2.4vw+14px,28px)}
   .pline{font-size:clamp(23px,2vw+14px,28px)}
   .psub{font-size:18px}
   .frow{font-size:clamp(26px,2vw+16px,32px)}
@@ -713,6 +715,7 @@ function render(){
   if(!S.seen[S.i]){ S.seen[S.i]=true; saveDB(); }
   $('exblk').textContent=blk.icon+' '+blk.name;
   $('exn').textContent=ex.n; $('extitle').textContent=ex.title; $('exhint').textContent=t(ex.hint);
+  $('extitle').classList.toggle('big', curBlock==='problemas');  // enunciados largos → más grandes
   const pb=$('paper');
   if(ex.paper || ex.lines){ pb.classList.remove('hidden'); $('ppnum').textContent=ex.n;
     let h=''; if(ex.paper) h+='<div class="pintro">'+ex.paper+'</div>';
