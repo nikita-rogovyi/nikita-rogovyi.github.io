@@ -269,6 +269,12 @@
     .sbtn{width:58px;height:58px;font-size:30px}
     .numlist .ftxt{min-width:11em}
   }
+  #homeview{min-height:80vh}  /* área amplia para tocar a los lados del mapa */
+  .tap-ripple{position:fixed;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;pointer-events:none;z-index:9999;
+    background:radial-gradient(circle,rgba(255,46,136,.55),transparent 70%);animation:rippleA .45s ease-out forwards}
+  @keyframes rippleA{from{transform:scale(.3);opacity:.95}to{transform:scale(1.7);opacity:0}}
+  .dbgtoast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:10000;font-family:var(--display);font-weight:800;
+    background:rgba(0,0,0,.8);color:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 18px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
   .hidden{display:none!important}
 </style>
 </head>
@@ -735,6 +741,7 @@ function render(){
   $('prev').disabled = S.i===0;
   const last = S.i===EX.length-1;
   $('next').textContent = (current && r.status==='pending') ? t('check')+(last?' 🏁':' ›') : (last?'🏁':'Siguiente ›');
+  $('skipbtn').classList.toggle('hidden', !DB.debug);  // botón de salto: solo en modo depuración
 }
 function advance(){ const S=blockState(curBlock), EX=BLOCKS.find(b=>b.id===curBlock).exercises, ni=S.i+1;
   if(ni>=EX.length){ showReport(); return; } S.i=ni; saveDB(); render(); }
@@ -784,7 +791,20 @@ function applyLang(){ document.querySelectorAll('.lang').forEach(b=>b.classList.
 
 $('next').onclick=onNext;
 $('prev').onclick=()=>go(-1);
-$('skipbtn').onclick=advance;  // TEMP: saltar sin resolver (previsualización)
+$('skipbtn').onclick=advance;  // saltar sin resolver (modo depuración)
+// combo secreta en el mapa: 3 toques a la IZQUIERDA + 4 a la DERECHA → activar/desactivar el botón de salto
+let secret='', secretTimer=null;
+function dbgToast(on){ const el=document.createElement('div'); el.className='dbgtoast'; el.textContent='⏭ '+(on?'ON':'OFF'); document.body.appendChild(el); setTimeout(()=>el.remove(),1400); }
+function ripple(x,y){ const r=document.createElement('div'); r.className='tap-ripple'; r.style.left=x+'px'; r.style.top=y+'px'; document.body.appendChild(r); setTimeout(()=>r.remove(),460); }
+$('homeview').addEventListener('click',e=>{
+  if(e.target.closest('.qblock,.lang,button,a')) return;          // ignorar coins / botones
+  ripple(e.clientX, e.clientY);                                   // feedback: se ve el toque
+  clearTimeout(secretTimer); secretTimer=setTimeout(()=>{secret='';},4000);
+  const side = e.clientX < window.innerWidth/2 ? 'L' : 'R';
+  secret += side;
+  if(!'LLLRRRR'.startsWith(secret)) secret = (side==='L'?'L':'');  // reiniciar (permite recomenzar con 'L')
+  if(secret==='LLLRRRR'){ secret=''; DB.debug=!DB.debug; saveDB(); dbgToast(DB.debug); }
+});
 // «‹» contextual: dentro de un bloque → al mapa; en el mapa → al inicio (lanzador)
 $('backbtn').onclick=()=>{ if(curBlock) showHome(); else location.assign('index.html'); };
 $('backhome').onclick=showHome;
