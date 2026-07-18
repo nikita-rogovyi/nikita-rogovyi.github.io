@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Список материалов для ремонта</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f7f7f5; color: #1a1a1a; margin: 0; padding: 20px; line-height: 1.4;
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.sub { color: #666; font-size: 13px; margin-bottom: 16px; }
+.bar {
+  position: sticky; top: 0; background: #f7f7f5; padding: 10px 0; z-index: 5;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  border-bottom: 1px solid #e2e2dd; margin-bottom: 14px;
+}
+.progress { font-size: 14px; font-weight: 600; }
+.progress span { color: #2e7d32; }
+button {
+  font: inherit; border: 1px solid #ccc; background: #fff; border-radius: 8px;
+  padding: 6px 12px; cursor: pointer;
+}
+button:hover { background: #f0f0ee; }
+.btn-reset { color: #b00; border-color: #e0b4b4; }
+.cat { background: #fff; border: 1px solid #e6e6e0; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+.cat > h2 {
+  font-size: 15px; margin: 0; padding: 12px 16px; background: #eef1ec;
+  border-bottom: 1px solid #e6e6e0; text-transform: uppercase; letter-spacing: .5px;
+}
+.row {
+  display: grid; grid-template-columns: 26px 1fr 92px; gap: 10px; align-items: start;
+  padding: 10px 16px; border-bottom: 1px solid #f0f0ec;
+}
+.row:last-child { border-bottom: none; }
+.row.done .name { text-decoration: line-through; color: #999; }
+input[type=checkbox] { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; accent-color: #2e7d32; }
+.name { font-size: 14px; }
+.note { display: block; color: #777; font-size: 12px; margin-top: 2px; }
+.es { display: block; color: #1565c0; font-size: 12.5px; margin-top: 3px; font-style: italic; }
+.es a { color: #1565c0; font-weight: 600; text-decoration: underline; }
+.qty { width: 100%; padding: 6px 8px; border: 1px solid #d5d5d0; border-radius: 8px; font-size: 13px; text-align: center; }
+.qty:focus { outline: 2px solid #2e7d32; border-color: #2e7d32; }
+.addrow { display: flex; gap: 8px; padding: 10px 16px; }
+.addrow input { flex: 1; padding: 6px 10px; border: 1px solid #d5d5d0; border-radius: 8px; font-size: 13px; }
+.del { border: none; background: none; color: #c00; cursor: pointer; font-size: 16px; padding: 0 4px; align-self: center; }
+.hdr { display: grid; grid-template-columns: 26px 1fr 92px; gap: 10px; padding: 4px 16px; font-size: 11px; color: #999; text-transform: uppercase; }
+.method { background: #fff; border: 1px solid #e6e6e0; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+.method > summary { font-size: 14px; font-weight: 600; padding: 12px 16px; background: #eef1ec; cursor: pointer; }
+.method-body { padding: 4px 18px 14px; font-size: 13px; color: #333; }
+.method-body ul { margin: 4px 0 8px; padding-left: 20px; }
+.method-body li { margin: 2px 0; }
+.method-body p { margin: 8px 0; }
+.method-note { color: #777; font-size: 12px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Материалы для ремонта</h1>
+  <div class="sub">Отмечай купленное галочкой, вписывай количество. Изменения сохраняются автоматически.</div>
+  <div class="bar">
+    <div class="progress">Куплено: <span id="pc">0</span> / <span id="pt">0</span></div>
+    <button id="collapseBtn">Скрыть купленное</button>
+    <button class="btn-reset" id="resetBtn">Сбросить всё</button>
+  </div>
+  <div id="app"></div>
+
+  <details class="method" open>
+    <summary>Методика подсчёта — Грунт (для истории)</summary>
+    <div class="method-body">
+      <p><b>Продукт:</b> грунт-праймер белый на водной основе / <i>Fondo fijador blanco al agua (imprimación penetrante)</i>, фасовка 4 л.</p>
+      <p><b>Расход (по рекомендации Евгения, ремонтник):</b> 4 л на 26 м² = ~6.5 м²/л. Грунт в <b>1 слой</b>.</p>
+      <p><b>Исходные площади (замеры Никиты):</b></p>
+      <ul>
+        <li>Потолки под покраску (минус ванная): <b>86.68 м²</b></li>
+        <li>Стены под покраску (минус туалеты, кухня, балкон; включают двери и шкафы): <b>216 м²</b></li>
+        <li>Высота стен: 250 см; общая площадь пола: 91.61 м²</li>
+      </ul>
+      <p><b>Про периметр 127.43 м:</b> это <b>не</b> наружный обвод квартиры (для 91.6 м² он был бы ~45–52 м), а суммарная длина всех стен (периметр каждой комнаты, перегородки считаются с двух сторон). Проверка: 127.43 × 2.5 = 318.6 м² всей стеновой поверхности ≈ 216 м² под покраску + ~100 м² стен туалетов/кухни/балкона. Цифра корректная. <b>Для ленты-фартука по периметру потолка:</b> потолки красятся почти во всех комнатах (минус ванная), а лента идёт по периметру каждой такой комнаты (перегородки оклеиваются с двух сторон — как и в сумме 127 м). Ориентир: ~127 м минус периметр ванной (потолок не красится) ≈ <b>118–120 м</b> (если оба мокрых помещения без покраски потолка — ~110 м) + запас на двери и подрезку. Важно: 86 м (216 ÷ 2.5) — это периметр стен под покраску, для ленты по потолку он не подходит.</p>
+      <p><b>Вычеты со стен (проёмы, которые не грунтуем):</b></p>
+      <ul>
+        <li>Двери: 7 × (0.88 × 2.10) + 1 × (1.40 × 2.10) = 12.94 + 2.94 = <b>15.9 м²</b></li>
+        <li>Шкафы: 5 × (1.50 × 2.00) = <b>15.0 м²</b></li>
+        <li>Окна: 4 × (1.56 × 1.80) = <b>11.2 м²</b> (входят в 216, поэтому вычитаются)</li>
+      </ul>
+      <p><b>Стены под грунт:</b> 216 − 15.9 − 15.0 − 11.2 = <b>≈174 м²</b></p>
+      <p><b>Итого площадь под грунт:</b> 86.68 (потолки) + 174 (стены) = <b>≈261 м²</b></p>
+      <p><b>Расчёт объёма (1 слой):</b> 261 м² ÷ 26 м²/ведро = 10.04 → <b>11 вёдер по 4 л (44 л)</b> с небольшим запасом.</p>
+      <p class="method-note">Примечание: расчёт на 1 слой. При грунтовании в 2 прохода (до и после шпаклёвки) объём удваивается (~21 ведро).</p>
+    </div>
+  </details>
+
+  <details class="method">
+    <summary>Методика подсчёта — Лента-фартук (для истории)</summary>
+    <div class="method-body">
+      <p><b>Товар:</b> Rollo papel con cinta 15 см × 45 м (Obramat ref 25056775).</p>
+      <p><b>Что оклеиваем:</b> периметр красящихся потолков + двери с обеих сторон.</p>
+      <ul>
+        <li>Периметр потолков ≈ <b>120 м</b> (127.43 м всех стен минус периметр ванной, где потолок не красится).</li>
+        <li>Двери 88 см ×7: (2·2.10 + 0.88) · 2 стороны · 7 = <b>71.1 м</b></li>
+        <li>Дверь 140 см ×1: (2·2.10 + 1.40) · 2 стороны = <b>11.2 м</b></li>
+        <li>Двери итого ≈ <b>82 м</b></li>
+      </ul>
+      <p><b>Всего:</b> 120 + 82 = <b>≈202 м</b> ÷ 45 м/рулон = 4.5 → <b>5–6 рулонов</b>.</p>
+    </div>
+  </details>
+
+  <details class="method">
+    <summary>Методика подсчёта — Картон для пола (для истории)</summary>
+    <div class="method-body">
+      <p><b>Товар:</b> Rollo de cartón supersuelos 90 см × 45 м = 0.9 × 45 = <b>40.5 м²/рулон</b> (Obramat ref 10097654).</p>
+      <p><b>Правило Евгения:</b> ×1.5 от площади пола (нахлёст + двойной слой в проходах).</p>
+      <ul>
+        <li>Площадь пола: <b>91.61 м²</b></li>
+        <li>×1.5 = <b>≈137 м²</b> картона</li>
+      </ul>
+      <p><b>Итого:</b> 137 ÷ 40.5 = 3.4 → <b>4 рулона</b> (~12.50 €/шт). Уточнить, во всех ли комнатах застилаем пол.</p>
+    </div>
+  </details>
+
+  <details class="method">
+    <summary>Методика подсчёта — Плёнка для мебели (для истории)</summary>
+    <div class="method-body">
+      <p><b>Товар:</b> Plástico cubretodo extrafuerte 4×5 м = 20 м²/лист (Obramat ref 10967194).</p>
+      <p><b>Раскладка по предметам:</b></p>
+      <ul>
+        <li>Двуспальная кровать → ~1 лист (20 м² с запасом)</li>
+        <li>2 обеденных стола → ~1 лист (режется на два куска)</li>
+        <li>ТВ 50" + комод 140×40×80 → ~1 лист (оба небольшие)</li>
+      </ul>
+      <p><b>Итого:</b> <b>2–3 упаковки</b> (беру 3 с запасом, ~2.78 €/шт).</p>
+    </div>
+  </details>
+
+  <details class="method">
+    <summary>Методика подсчёта — Плёнка с клейкой кромкой для кухни (для истории)</summary>
+    <div class="method-body">
+      <p><b>Товар:</b> Rollo plástico con cinta 2.6 × 22.5 м (Obramat ref 10963043).</p>
+      <p><b>Кухня L-образная:</b> периметр фронта 460 + 200 = <b>660 см = 6.6 м</b>, высота до потолка <b>250 см</b>.</p>
+      <ul>
+        <li>Ширина плёнки 2.6 м перекрывает высоту 2.5 м (клеишь по верхней кромке, разворачиваешь вниз).</li>
+        <li>Длина рулона 22.5 м покрывает 6.6 м троекратно.</li>
+      </ul>
+      <p><b>Итого:</b> <b>1 рулон</b> (~3 €).</p>
+    </div>
+  </details>
+</div>
+
+<script>
+const DATA = [
+  { cat: "Электрика — BTicino (предположительно Living Light, антрацит + белые механизмы)", note: "Подтвердить линейку у продавца: взять с собой снятую рамку + один механизм (на суппорте маркировка «bticino», «CEBEC», код 0383/171). Подрозетники — электрик. Испанские названия — общие; артикул BTicino подтвердить по образцу.", items: [
+    { n: "Механизм розетки Schuko 2К+З (белый)", es: "Mecanismo de base de enchufe Schuko 2P+T (con toma de tierra), blanco", q: "11", note: "Кухня 3 · Наша спальня 4 · Спальня Евы 3 (новый блок) + 1 (добавочная). Существующие в спальне Евы 1 выкл. + 1 розетку переносим/используем повторно." },
+    { n: "Механизм выключателя 1-клавишный (белый)", es: "Mecanismo de interruptor unipolar, blanco", q: "2", note: "Наша спальня: по 1 над каждой тумбочкой" },
+    { n: "Рамка на 3 места, антрацит", es: "Placa / marco embellecedor de 3 elementos, color antracita", q: "5", note: "Кухня 1 · Наша спальня 2 · Спальня Евы 2 (блок 3 розетки + блок выкл.+2 розетки)" },
+    { n: "Суппорт (держатель с лапками)", es: "Soporte / bastidor con garras (para tabique de pladur)", q: "13", note: "СЦЕНАРИЙ А — отдельный подрозетник на каждую точку. Если электрик ставит один длинный подрозетник на блок → нужно 5 суппортов (по 6 модулей). УТОЧНИТЬ У ЭЛЕКТРИКА." },
+  ]},
+  { cat: "Малярка / подготовка под покраску", note: "Ссылки на товары Obramat добавлены там, где товар проверен; остальные допишем по мере прохода по категориям.", items: [
+    { n: "Грунт-праймер белый на водной основе (4 л)", es: "Fondo fijador acrílico al agua, 4 L blanco (imprimación selladora penetrante)", url: "https://www.obramat.es/productos/fondo-fijador-acrilico-4l-blanco-10932495.html", q: "11", note: "1 слой на ~261 м² (потолки 86.68 + стены 174). Расход 4 л на 26 м². По совету Евгения. Фасовка 4 л, ~12.40 €. Если 2 прохода → ~21 ведро." },
+    { n: "Шпаклёвка БЕЗ усадки — для заделки дырок (порошок, глубокий слой)", es: "Plaste en polvo de capa gruesa (renovación), «apenas merma»", url: "https://www.obramat.es/productos/plaste-en-polvo-capa-gruesa-renovacion-2h-15kg-10946075.html", q: "~5 кг", note: "ПРИОРИТЕТ. Порошок almost без усадки — то, что просил Евгений вместо пасты. Разводится водой. Есть также готовая паста «masilla en pasta capa gruesa 5 kg» (проще, но усадка чуть больше)." },
+    { n: "Шпаклёвка — запасной вариант (даёт усадку)", es: "Masilla Aguaplast Standard Cima, lista al uso (Beissier)", q: "", note: "То, чем пользовался Евгений. Брать ТОЛЬКО если без усадки не найдёшь." },
+    { n: "Лента-фартук с бумагой (потолки + двери с обеих сторон), 15 см × 45 м", es: "Rollo de papel con cinta reciclado (cinta de carrocero con papel de enmascarar), 15 cm × 45 m — 20 cm no lo tienen", url: "https://www.obramat.es/productos/rollo-papel-con-cinta-reciclado-15cm-x-45m-25056775.html", q: "5-6 рулонов", note: "20 см у Obramat НЕТ — ширины 10/15/30/45 см. Рабочий товар: ROLLO PAPEL CON CINTA RECICLADO 15 см × 45 м, ref 25056775, ~1.50 €/рулон. РАСЧЁТ ДЛИНЫ: потолки ≈120 м + двери (обе стороны) ≈82 м [88см×7 = (2·2.10+0.88)·2·7 = 71.1; 140см×1 = (4.20+1.40)·2 = 11.2] = ~202 м ÷ 45 = 4.5 → 5-6 рулонов." },
+    { n: "Картон для защиты пола 90 см × 45 м", es: "Rollo de cartón supersuelos (cartón protector de suelos), 90 cm × 45 m", url: "https://www.obramat.es/productos/rollo-de-carton-supersuelos-90cm-x-45m-10097654.html", q: "4", note: "×1.5 от площади пола (правило Евгения): 91.61 × 1.5 ≈ 137 м² ÷ 40.5 м²/рулон = 3.4 → 4 рулона. ref 10097654, ~12.50 €/рулон. Уточнить, во всех ли комнатах застилаем." },
+    { n: "Укрывная плёнка усиленная для мебели (кровать, 2 стола, ТВ 50\", комод 140×40×80)", es: "Plástico cubretodo extrafuerte 4×5 m (lámina de polietileno reciclado, 27 µm)", url: "https://www.obramat.es/productos/plastico-cubretodo-extrafuerte-4x5m-reciclado-10967194.html", q: "2-3", note: "Лист 4×5 м = 20 м², ~2.78 €/шт. Раскладка: кровать ~1 лист · 2 стола ~1 лист · ТВ 50\" + комод ~1 лист → 2-3 упаковки (беру 3 с запасом)." },
+    { n: "Плёнка с клейкой кромкой для кухни (периметр 460+200 см, высота 250 см)", es: "Rollo de plástico con cinta (masking film con cinta de carrocero), 2.6 × 22.5 m", url: "https://www.obramat.es/productos/rollo-plastico-reciclado-con-cinta-2-6x22-5-m-10963043.html", q: "1", note: "Кухня L-образная: периметр фронта 460+200 = 660 см = 6.6 м, высота до потолка 250 см. Ширина плёнки 2.6 м перекрывает высоту 2.5 м (клеишь по верхней кромке, разворачиваешь вниз); длина рулона 22.5 м покрывает 6.6 м троекратно → 1 рулона хватает. ~3 €, толщина 15 мкм." },
+    { n: "Скотч малярный широкий 48 мм × 45 м", es: "Cinta de pintor / cinta de carrocero, 48 mm × 45 m", url: "https://www.obramat.es/productos/cinta-de-pintor-48-mm-x-45-m-10559192.html", q: "10", note: "рулонов. ref 10559192, ~1.32 €/рулон (MIARCO)." },
+    { n: "Валик на грунт 22 см, ворс 9 мм (стены/потолки)", es: "Rodillo antigota 22 cm, pelo/fibra 9 mm (semilisas)", url: "https://www.obramat.es/productos/rodillo-superficies-lisas-antigota-22-cm-10764831.html", q: "1", note: "ВАЖНО: нужен ВОРС (pelo/altura de fibra) 9 мм — это валик класса «semilisas». На ficha «7 mm» = диаметр варилла (проволоки), НЕ ворс! Ссылка — на antigota 22 см как ориентир; у консультанта уточни ворс 9 мм. + советую запасную шубу (recambio 22 см)." },
+    { n: "Мини-валик на грунт 11 см, ворс 9 мм (в сборе)", es: "Minirodillo 11 cm, pelo 9 mm (semilisas) — confirmar en tienda", url: "https://www.obramat.es/productos/minirodillo-piel-de-melocoton-11cm-10764425.html", q: "1", note: "ВАЖНО: ворс 9 мм. У Obramat 11-см мини чаще короткий ворс/пена. Ссылка — «piel de melocotón» (ref 10764425), ближайшее по ворсу; уточни 9 мм у консультанта. Короткий вариант, если 9 мм нет: microfibra seda ref 10962280." },
+    { n: "Сменные шубы для мини-валика 11 см (пакет 5 шт)", es: "5 recambios minirodillo 11 cm (espuma multiusos) — o «piel de melocotón» 2 uds", url: "https://www.obramat.es/productos/5-recambios-espuma-multiusos-11cm-10461885.html", q: "1", note: "Ты просил 5 шт: ссылка — 5 recambios espuma (ref 10461885, ~2.75 €, 5 шт, в наличии). Под текстуру валика piel de melocotón: recambios 2 шт ref 10764551 (~2.00 €). Ровно 9-мм ворса в 11 см у Obramat нет — это ближайшее." },
+    { n: "Лоток плоский 22 см — грунт + 4 цвета", es: "Bandeja plana de plástico 22 cm (para rodillo 22 cm)", url: "https://www.obramat.es/productos/bandeja-plana-de-plastico-22cm-25051732.html", q: "5", note: "1 под грунт + 4 (по 1 на каждый цвет). BARBOSA, ~1.20 €/шт, 32×35×7 см. Обычный плоский лоток, не ведро." },
+    { n: "Валик под покраску 22 см, короткий ворс (superficies lisas)", es: "Rodillo superficies lisas 22 cm (microfibra/poliamida, pelo corto ~5 mm)", url: "https://www.obramat.es/productos/rodillo-superficies-lisas-22cm-10763543.html", q: "4", note: "По 1 на цвет: тёплый (стены) · белый (потолок) · пудровый (Ева) · зелёный (акцент). BARBOSA, ~3.03 €. Совет: +2 запасные шубы на большие площади (тёплые стены и белый потолок)." },
+    { n: "Мини-валик под покраску 11 см (кромки/углы)", es: "Minirodillo superficies lisas microfibra seda 11 cm", url: "https://www.obramat.es/productos/minirodillo-superficies-lisas-microfibra-seda-11-cm-10962280.html", q: "4", note: "По 1 на цвет — для углов, кромок и захода к потолку/плинтусу. PENTRILO, ~2.50 €." },
+  ]},
+  { cat: "Разное", note: "", items: [
+    { n: "Декоративные накладки на трубы отопления Ø16 мм", es: "Embellecedor / florón para tubo de calefacción Ø16 mm", q: "2", note: "×2 на батарею (на гайке написано «16»)" },
+    { n: "Войлочные накладки на ножки мебели (12 шт в упаковке)", es: "Fieltro adhesivo 22 mm marrón, 12 uds (protectores para patas)", url: "https://www.obramat.es/productos/fieltro-adhesivo-22mm-marron-12uds-10197845.html", q: "1", note: "12 ножек: 2 стола (по 4) + кровать (4). INOFIX, ~1 €/упаковка (12 шт, 22×22 мм) — ровно на 12. Возьми 2 упаковки, если хочешь запас или ножки шире 22 мм." },
+    { n: "Силикон санитарный чисто белый (замена швов ванны/душа)", es: "Silicona ácida para baños y cocinas, blanca, con fungicida (antimoho)", url: "https://www.obramat.es/productos/silicona-acida-para-banos-y-cocinas-280ml-blanca-10968370.html", q: "2", note: "Чисто белый под ванну/сантехнику, антигрибковый — на замену пожелтевших/почерневших швов. BOSTIK 280 мл, ~3.95 €. Старый силикон полностью удалить и просушить перед нанесением. ❓ВОПРОС ЕВГЕНИЮ: нужен ли пистолет (pistola de silicona) и жидкость-удалитель старого силикона (quitasiliconas)?" },
+    { n: "Акриловый силикон в цвет плитки — бежевый (пол)", es: "Silicona / sellador color arena-beige (suelo)", q: "", note: "" },
+    { n: "Регулировочные кольца (проставки) в дверную петлю (упаковка 4 шт)", es: "Arandela ovalillo para pernio de puerta, latón, 4 uds (elevador de puerta)", url: "https://www.obramat.es/productos/arandela-ovalillo-para-pernio-de-puerta-laton-4uds-10083983.html", q: "1", note: "Дверь просела на 1-2 мм — кольца на штырь петли приподнимут её. M. PASCUAL, ~0.50 €/уп (4 шт, нужно 3). Ø внутр. 7.3 мм. Есть и нержавеющая версия (ref 10327170). ❓ВОПРОС ЕВГЕНИЮ: подходит ли Ø внутр. 7.3 мм под штырь (pernio) петли, или нужен другой размер?" },
+  ]},
+];
+
+const KEY = "remont-checklist-v1";
+function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+function save(s) { localStorage.setItem(KEY, JSON.stringify(s)); }
+let state = load();
+let hideDone = false;
+
+function id(c, i) { return c + "|" + i; }
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  let total = 0, done = 0;
+  DATA.forEach((cat, ci) => {
+    const box = document.createElement("div");
+    box.className = "cat";
+    let h = `<h2>${cat.cat}</h2>`;
+    if (cat.note) h += `<div class="note" style="padding:8px 16px 0">${cat.note}</div>`;
+    h += `<div class="hdr"><div>✓</div><div>Позиция</div><div>Кол-во</div></div>`;
+    box.innerHTML = h;
+    cat.items.forEach((it, ii) => {
+      const k = id(ci, ii);
+      const st = state[k] || {};
+      const checked = !!st.done;
+      total++; if (checked) done++;
+      if (hideDone && checked) return;
+      const row = document.createElement("div");
+      row.className = "row" + (checked ? " done" : "");
+      row.innerHTML =
+        `<input type="checkbox" ${checked ? "checked" : ""} data-k="${k}">` +
+        `<div class="name">${it.n}` +
+          (it.es ? `<span class="es">🇪🇸 ${it.es}${it.url ? ` · <a href="${it.url}" target="_blank" rel="noopener">ficha Obramat ↗</a>` : ""}</span>` : "") +
+          (it.note ? `<span class="note">${it.note}</span>` : "") +
+        `</div>` +
+        `<input class="qty" data-k="${k}" value="${st.qty !== undefined ? st.qty : it.q}" placeholder="—">`;
+      box.appendChild(row);
+    });
+    // custom items for this category
+    const custom = (state["_custom_" + ci] || []);
+    custom.forEach((c, idx) => {
+      total++; if (c.done) done++;
+      if (hideDone && c.done) return;
+      const row = document.createElement("div");
+      row.className = "row" + (c.done ? " done" : "");
+      row.innerHTML =
+        `<input type="checkbox" ${c.done ? "checked" : ""} data-custom="${ci}" data-idx="${idx}">` +
+        `<div class="name">${c.n}</div>` +
+        `<input class="qty" data-customq="${ci}" data-idx="${idx}" value="${c.q || ""}" placeholder="—">` ;
+      box.appendChild(row);
+    });
+    // add row
+    const add = document.createElement("div");
+    add.className = "addrow";
+    add.innerHTML = `<input placeholder="Добавить позицию..." data-add="${ci}"><button data-addbtn="${ci}">+</button>`;
+    box.appendChild(add);
+    app.appendChild(box);
+  });
+  document.getElementById("pc").textContent = done;
+  document.getElementById("pt").textContent = total;
+  bind();
+}
+
+function bind() {
+  document.querySelectorAll('input[type=checkbox][data-k]').forEach(el => {
+    el.onchange = () => { const k = el.dataset.k; state[k] = state[k] || {}; state[k].done = el.checked; save(state); render(); };
+  });
+  document.querySelectorAll('input.qty[data-k]').forEach(el => {
+    el.oninput = () => { const k = el.dataset.k; state[k] = state[k] || {}; state[k].qty = el.value; save(state); };
+  });
+  document.querySelectorAll('input[type=checkbox][data-custom]').forEach(el => {
+    el.onchange = () => { const ci = el.dataset.custom, idx = +el.dataset.idx; state["_custom_"+ci][idx].done = el.checked; save(state); render(); };
+  });
+  document.querySelectorAll('input.qty[data-customq]').forEach(el => {
+    el.oninput = () => { const ci = el.dataset.customq, idx = +el.dataset.idx; state["_custom_"+ci][idx].q = el.value; save(state); };
+  });
+  document.querySelectorAll('button[data-addbtn]').forEach(el => {
+    el.onclick = () => {
+      const ci = el.dataset.addbtn;
+      const inp = document.querySelector(`input[data-add="${ci}"]`);
+      const v = inp.value.trim(); if (!v) return;
+      const key = "_custom_" + ci;
+      state[key] = state[key] || [];
+      state[key].push({ n: v, q: "", done: false });
+      save(state); render();
+    };
+  });
+  document.querySelectorAll('input[data-add]').forEach(el => {
+    el.onkeydown = (e) => { if (e.key === "Enter") { document.querySelector(`button[data-addbtn="${el.dataset.add}"]`).click(); } };
+  });
+}
+
+document.getElementById("resetBtn").onclick = () => {
+  if (confirm("Сбросить все галочки, количества и добавленные позиции?")) { state = {}; save(state); render(); }
+};
+document.getElementById("collapseBtn").onclick = (e) => {
+  hideDone = !hideDone;
+  e.target.textContent = hideDone ? "Показать всё" : "Скрыть купленное";
+  render();
+};
+
+render();
+</script>
+</body>
+</html>
